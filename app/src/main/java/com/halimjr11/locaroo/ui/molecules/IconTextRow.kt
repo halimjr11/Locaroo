@@ -8,12 +8,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun IconTextRow(
     icon: Painter?,
+    iconTint: Color = MaterialTheme.colorScheme.outline,
     text: String,
     modifier: Modifier = Modifier
 ) {
@@ -22,7 +24,11 @@ fun IconTextRow(
         horizontalArrangement = Arrangement.spacedBy(6.dp),
         modifier = modifier
     ) {
-        if (icon != null) Icon(painter = icon, contentDescription = null, tint = MaterialTheme.colorScheme.outline)
-        Text(text = text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+        if (icon != null) Icon(painter = icon, contentDescription = null, tint = iconTint)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

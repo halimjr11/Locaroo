@@ -1,4 +1,4 @@
-package com.halimjr11.locaroo.data.remote.model
+package com.halimjr11.locaroo.data.remote.model.request
 
 import com.google.gson.annotations.SerializedName
 

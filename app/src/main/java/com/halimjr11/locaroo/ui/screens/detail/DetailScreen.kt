@@ -1,6 +1,7 @@
 package com.halimjr11.locaroo.ui.screens.detail
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,19 +12,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.halimjr11.locaroo.ui.molecules.IconTextRow
-import com.halimjr11.locaroo.ui.molecules.PriceTag
 import com.halimjr11.locaroo.ui.molecules.PrimaryButton
 import com.halimjr11.locaroo.ui.organisms.AboutSection
 import com.halimjr11.locaroo.ui.organisms.TopImageHeader
@@ -33,20 +35,22 @@ import com.halimjr11.locaroo.ui.theme.LocarooTheme
 fun DetailScreen(
     title: String,
     location: String,
-    rating: Double,
-    priceText: String,
+    rating: Float,
+    description: String,
     headerImage: String,
     onBack: () -> Unit = {},
     onBookmark: () -> Unit = {}
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize()) {
         TopImageHeader(
             image = headerImage,
             onBack = onBack,
             onBookmark = onBookmark
         )
         Surface(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 200.dp),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             Column(
@@ -70,28 +74,33 @@ fun DetailScreen(
                         Text(
                             text = location,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.outline
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
                 Spacer(Modifier.height(12.dp))
-                // Meta row: location + rating + price per person
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    IconTextRow(icon = null, text = location)
-                    Text(text = "•", color = MaterialTheme.colorScheme.outline)
-                    IconTextRow(icon = null, text = String.format("%.1f", rating))
+                    IconTextRow(
+                        icon = rememberVectorPainter(Icons.Filled.LocationOn),
+                        text = location
+                    )
+                    Text(text = "•", color = MaterialTheme.colorScheme.onSurface)
+                    IconTextRow(
+                        icon = rememberVectorPainter(Icons.Filled.Star),
+                        iconTint = MaterialTheme.colorScheme.primary,
+                        text = rating.toString()
+                    )
                     Spacer(Modifier.weight(1f))
-                    PriceTag(priceText = priceText)
                 }
                 Spacer(Modifier.height(16.dp))
                 AboutSection(
-                    description = "You will get a complete travel package on the beaches. Packages in the form of airline tickets, recommended hotel rooms, transportation. Have you ever been on holiday to the Greek, etc..."
+                    description = description
                 )
                 Spacer(Modifier.height(20.dp))
-                PrimaryButton(text = "Book Now", modifier = Modifier.fillMaxWidth()) { }
+                PrimaryButton(text = "Plan Now", modifier = Modifier.fillMaxWidth()) { }
                 Spacer(Modifier.height(8.dp))
             }
         }
@@ -105,9 +114,9 @@ private fun DetailScreenPreviewLight() {
         DetailScreen(
             title = "Niladri Reservoir",
             location = "Tekergat, Sunamganj",
-            rating = 4.7,
-            priceText = "$59/Person",
-            headerImage = ColorPainter(MaterialTheme.colorScheme.secondaryContainer)
+            rating = 4.7f,
+            description = "You will get a complete travel package on the beaches. Packages in the form of airline tickets, recommended hotel rooms, transportation. Have you ever been on holiday to the Greek, etc...",
+            headerImage = ""
         )
     }
 }
@@ -119,9 +128,9 @@ private fun DetailScreenPreviewDark() {
         DetailScreen(
             title = "Niladri Reservoir",
             location = "Tekergat, Sunamganj",
-            rating = 4.7,
-            priceText = "$59/Person",
-            headerImage = ColorPainter(MaterialTheme.colorScheme.secondaryContainer)
+            rating = 4.7f,
+            description = "You will get a complete travel package on the beaches. Packages in the form of airline tickets, recommended hotel rooms, transportation. Have you ever been on holiday to the Greek, etc...",
+            headerImage = ""
         )
     }
 }

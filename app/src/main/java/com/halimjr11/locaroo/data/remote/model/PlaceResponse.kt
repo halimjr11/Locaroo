@@ -2,7 +2,7 @@ package com.halimjr11.locaroo.data.remote.model
 
 import com.google.gson.annotations.SerializedName
 
-data class PlaceCreateResponse(
+data class PlaceResponse(
     @SerializedName("id")
     val id: Long? = null,
     @SerializedName("name")

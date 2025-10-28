@@ -3,7 +3,6 @@ package com.halimjr11.locaroo.ui.organisms
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,15 +20,28 @@ fun AboutSection(
     description: String,
     readMore: String = " Read More"
 ) {
-    Column(Modifier.padding(horizontal = 16.dp)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+    Column {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold
+        )
         Spacer(Modifier.height(8.dp))
         val annotated: AnnotatedString = buildAnnotatedString {
             append(description)
-            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Medium)) {
+            withStyle(
+                SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Medium
+                )
+            ) {
                 append(readMore)
             }
         }
-        Text(text = annotated, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f))
+        Text(
+            text = annotated,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+        )
     }
 }

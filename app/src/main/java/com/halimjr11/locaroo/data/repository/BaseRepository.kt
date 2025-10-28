@@ -1,6 +1,6 @@
 package com.halimjr11.locaroo.data.repository
 
-import com.halimjr11.locaroo.domain.model.Result
+import com.halimjr11.locaroo.domain.model.DomainResult
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -8,20 +8,20 @@ open class BaseRepository {
     
     suspend fun <T> safeApiCall(
         apiCall: suspend () -> T
-    ): Result<T> {
+    ): DomainResult<T> {
         return try {
-            Result.Success(apiCall.invoke())
+            DomainResult.Success(apiCall.invoke())
         } catch (throwable: Throwable) {
             when (throwable) {
-                is IOException -> Result.Error("Network error: ${throwable.message}")
+                is IOException -> DomainResult.Error(Exception("Network error: ${throwable.message}"))
                 is HttpException -> {
                     val errorResponse = convertErrorBody(throwable)
-                    Result.Error(
-                        errorResponse?.message ?: "Something went wrong"
+                    DomainResult.Error(
+                        Exception(errorResponse?.message ?: "Something went wrong")
                     )
                 }
                 else -> {
-                    Result.Error("Unknown error: ${throwable.message}")
+                    DomainResult.Error(Exception("Unknown error: ${throwable.message}"))
                 }
             }
         }
