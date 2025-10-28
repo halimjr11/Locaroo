@@ -1,7 +1,13 @@
 package com.halimjr11.locaroo.ui.screens.detail
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,7 +22,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.halimjr11.locaroo.ui.molecules.AvatarStack
 import com.halimjr11.locaroo.ui.molecules.IconTextRow
 import com.halimjr11.locaroo.ui.molecules.PriceTag
 import com.halimjr11.locaroo.ui.molecules.PrimaryButton
@@ -30,7 +35,7 @@ fun DetailScreen(
     location: String,
     rating: Double,
     priceText: String,
-    headerImage: Painter? = null,
+    headerImage: String,
     onBack: () -> Unit = {},
     onBookmark: () -> Unit = {}
 ) {
@@ -57,15 +62,24 @@ fun DetailScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(Modifier.weight(1f)) {
-                        Text(text = title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-                        Text(text = location, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.outline)
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = location,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline
+                        )
                     }
-                    // Host avatar placeholder stack
-                    AvatarStack(painters = listOf(null, null, null))
                 }
                 Spacer(Modifier.height(12.dp))
                 // Meta row: location + rating + price per person
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     IconTextRow(icon = null, text = location)
                     Text(text = "•", color = MaterialTheme.colorScheme.outline)
                     IconTextRow(icon = null, text = String.format("%.1f", rating))
