@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
-import com.halimjr11.locaroo.di.Destination
+import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.DestinationCard
 import com.halimjr11.locaroo.ui.molecules.SectionHeader
 
@@ -19,10 +19,10 @@ import com.halimjr11.locaroo.ui.molecules.SectionHeader
 fun CityRecommendations(
     modifier: Modifier = Modifier,
     title: String = "Rekomendasi kotamu",
-    places: List<Destination>,
+    places: List<PlaceUi>,
     selectedCity: String? = null,
-    onPlaceClick: (Destination) -> Unit = {},
-    onBookmarkClick: (Destination) -> Unit = {},
+    onPlaceClick: (PlaceUi) -> Unit = {},
+    onBookmarkClick: (PlaceUi) -> Unit = {},
 ) {
     SectionHeader(title = title, onActionClick = {})
     LazyRow(

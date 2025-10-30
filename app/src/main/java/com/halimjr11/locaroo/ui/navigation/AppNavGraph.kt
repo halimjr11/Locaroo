@@ -4,10 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.halimjr11.locaroo.view.screens.home.HomeScreen
-import com.halimjr11.locaroo.view.screens.search.SearchScreen
-import com.halimjr11.locaroo.view.screens.journey.JourneyScreen
 
 @Composable
 fun AppNavGraph(
@@ -19,14 +15,11 @@ fun AppNavGraph(
         startDestination = NavRoute.Home.route,
         modifier = modifier
     ) {
-        composable(NavRoute.Home.route) {
-            HomeScreen()
-        }
-        composable(NavRoute.Search.route) {
-            SearchScreen()
-        }
-        composable(NavRoute.Journey.route) {
-            JourneyScreen()
-        }
+        homeNavGraph()
+        searchNavGraph(
+            onBack = { navController.popBackStack() },
+            onPlaceClick = { navController.navigate("detail/${it.id}") }
+        )
+        journeyNavGraph()
     }
 }

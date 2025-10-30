@@ -33,6 +33,7 @@ import com.halimjr11.locaroo.ui.molecules.SectionHeader
 import com.halimjr11.locaroo.ui.organisms.DestinationCarousel
 import com.halimjr11.locaroo.ui.state.UiState
 import com.halimjr11.locaroo.ui.theme.LocarooTheme
+import com.halimjr11.locaroo.utils.SampleData
 import com.halimjr11.locaroo.view.viewmodels.search.SearchViewModel
 
 @Composable
@@ -137,7 +138,13 @@ private fun SearchScreenContent(
 @Composable
 private fun SearchScreenPreviewLight() {
     LocarooTheme(darkTheme = false, dynamicColor = false) {
-        SearchScreen()
+        SearchScreenContent(
+            items = SampleData.destinations,
+            query = "",
+            onValueChange = {},
+            onBack = {},
+            onCardClick = {},
+        )
     }
 }
 
@@ -145,6 +152,12 @@ private fun SearchScreenPreviewLight() {
 @Composable
 private fun SearchScreenPreviewDark() {
     LocarooTheme(darkTheme = true, dynamicColor = false) {
-        SearchScreen()
+        SearchScreenContent(
+            items = SampleData.destinations,
+            query = "",
+            onValueChange = {},
+            onBack = {},
+            onCardClick = {},
+        )
     }
 }
