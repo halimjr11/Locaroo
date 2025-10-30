@@ -1,4 +1,4 @@
-package com.halimjr11.locaroo.ui.screens
+package com.halimjr11.locaroo.view.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

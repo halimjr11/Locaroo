@@ -1,29 +1,41 @@
 package com.halimjr11.locaroo.utils
 
-import com.halimjr11.locaroo.model.Destination
+import com.halimjr11.locaroo.ui.model.PlaceUi
 
 object SampleData {
-    val destinations: List<Destination> = listOf(
-        Destination(
+    val destinations: List<PlaceUi> = listOf(
+        PlaceUi(
             id = "1",
             name = "Niladri Reservoir",
-            imageUrl = null,
             location = "Jakarta",
-            rating = 4.7
+            description = "A beautiful reservoir",
+            imageUrl = null,
+            rating = 4.7,
+            reviewsCount = 10,
+            latitude = 0.0,
+            longitude = 0.0
         ),
-        Destination(
+        PlaceUi(
             id = "2",
             name = "Derma View",
-            imageUrl = null,
             location = "Bandung",
-            rating = 4.5
+            description = "Scenic view",
+            imageUrl = null,
+            rating = 4.5,
+            reviewsCount = 8,
+            latitude = 0.0,
+            longitude = 0.0
         ),
-        Destination(
+        PlaceUi(
             id = "3",
             name = "Bromo Mountain",
-            imageUrl = null,
             location = "Malang",
-            rating = 4.8
+            description = "Volcanic mountain",
+            imageUrl = null,
+            rating = 4.8,
+            reviewsCount = 15,
+            latitude = 0.0,
+            longitude = 0.0
         ),
     )
 }

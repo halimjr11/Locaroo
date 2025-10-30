@@ -2,7 +2,7 @@ package com.halimjr11.locaroo.data.repository
 
 import com.halimjr11.locaroo.data.mapper.RemoteDataMapper
 import com.halimjr11.locaroo.data.remote.LocalGemApi
-import com.halimjr11.locaroo.domain.model.DomainResult
+import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.repository.PlaceRepository
 import okhttp3.MediaType.Companion.toMediaType

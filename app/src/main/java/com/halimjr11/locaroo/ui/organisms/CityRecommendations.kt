@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
-import com.halimjr11.locaroo.model.Destination
+import com.halimjr11.locaroo.di.Destination
 import com.halimjr11.locaroo.ui.molecules.DestinationCard
 import com.halimjr11.locaroo.ui.molecules.SectionHeader
 

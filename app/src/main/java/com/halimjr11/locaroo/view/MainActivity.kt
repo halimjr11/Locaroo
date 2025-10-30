@@ -1,4 +1,4 @@
-package com.halimjr11.locaroo
+package com.halimjr11.locaroo.view
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

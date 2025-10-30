@@ -1,4 +1,4 @@
-package com.halimjr11.locaroo.ui.screens.journey
+package com.halimjr11.locaroo.view.screens.journey
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.halimjr11.locaroo.domain.model.ScheduleItem
+import com.halimjr11.locaroo.ui.model.ScheduleItemUi
 import com.halimjr11.locaroo.ui.theme.LocarooTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -59,7 +59,7 @@ fun JourneyScreen(modifier: Modifier = Modifier) {
         buildList {
             daysOfWeek.forEachIndexed { i, d ->
                 add(
-                    ScheduleItem(
+                    ScheduleItemUi(
                         i + 1L,
                         d.format(DateTimeFormatter.ofPattern("d MMMM")),
                         "Niladi Reservoir",
@@ -67,7 +67,7 @@ fun JourneyScreen(modifier: Modifier = Modifier) {
                     )
                 )
                 if (i % 2 == 0) add(
-                    ScheduleItem(
+                    ScheduleItemUi(
                         100 + i + 1L,
                         d.format(DateTimeFormatter.ofPattern("d MMMM")),
                         "High Rech Park",
@@ -82,18 +82,38 @@ fun JourneyScreen(modifier: Modifier = Modifier) {
         all
     ) { all.filter { it.date == selectedDate.format(DateTimeFormatter.ofPattern("d MMMM")) } }
 
+    JourneyScreenContent(
+        items = itemsForDay,
+        selectedDate = selectedDate,
+        daysOfWeek = daysOfWeek,
+        onPrev = { selectedDate = selectedDate.minusDays(1) },
+        onNext = { selectedDate = selectedDate.plusDays(1) },
+        onSelect = { selectedDate = it }
+    )
+}
+
+@Composable
+private fun JourneyScreenContent(
+    modifier: Modifier = Modifier,
+    items: List<ScheduleItemUi>,
+    selectedDate: LocalDate,
+    daysOfWeek: List<LocalDate>,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+    onSelect: (LocalDate) -> Unit,
+) {
     Surface(modifier = modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             TopBar()
             WeekHeader(
                 date = selectedDate,
                 daysOfWeek = daysOfWeek,
-                onPrev = { selectedDate = selectedDate.minusDays(1) },
-                onNext = { selectedDate = selectedDate.plusDays(1) },
-                onSelect = { selectedDate = it }
+                onPrev = onPrev,
+                onNext = onNext,
+                onSelect = onSelect
             )
             SectionHeader()
-            ScheduleList(itemsForDay)
+            ScheduleList(items)
         }
     }
 }
@@ -225,7 +245,7 @@ private fun SectionHeader() {
 }
 
 @Composable
-private fun ScheduleList(items: List<ScheduleItem>) {
+private fun ScheduleList(items: List<ScheduleItemUi>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -237,7 +257,7 @@ private fun ScheduleList(items: List<ScheduleItem>) {
 }
 
 @Composable
-private fun ScheduleCard(item: ScheduleItem) {
+private fun ScheduleCard(item: ScheduleItemUi) {
     Card(
         modifier = Modifier
             .fillMaxWidth()

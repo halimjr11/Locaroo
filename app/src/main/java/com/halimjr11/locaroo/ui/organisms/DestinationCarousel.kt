@@ -11,15 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.unit.dp
-import com.halimjr11.locaroo.model.Destination
+import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.DestinationCard
 
 @Composable
 fun DestinationCarousel(
     modifier: Modifier = Modifier,
-    items: List<Destination>,
-    onCardClick: (Destination) -> Unit = {},
-    onBookmarkClick: (Destination) -> Unit = {}
+    items: List<PlaceUi>,
+    onCardClick: (PlaceUi) -> Unit = {},
+    onBookmarkClick: (PlaceUi) -> Unit = {}
 ) {
     LazyRow(
         modifier = modifier

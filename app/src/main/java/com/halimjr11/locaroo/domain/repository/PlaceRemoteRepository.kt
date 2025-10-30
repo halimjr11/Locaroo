@@ -1,6 +1,6 @@
 package com.halimjr11.locaroo.domain.repository
 
-import com.halimjr11.locaroo.domain.model.DomainResult
+import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 
 interface PlaceRepository {

@@ -9,7 +9,7 @@ import com.halimjr11.locaroo.data.remote.model.request.RegisterRequest
 import com.halimjr11.locaroo.data.utils.AuthPrefKeys
 import com.halimjr11.locaroo.domain.model.AuthDataDomain
 import com.halimjr11.locaroo.domain.model.AuthUserDomain
-import com.halimjr11.locaroo.domain.model.DomainResult
+import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.repository.AuthRemoteRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

@@ -5,10 +5,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.halimjr11.locaroo.ui.navigation.NavRoute
-import com.halimjr11.locaroo.ui.screens.home.HomeScreen
-import com.halimjr11.locaroo.ui.screens.search.SearchScreen
-import com.halimjr11.locaroo.ui.screens.journey.JourneyScreen
+import com.halimjr11.locaroo.view.screens.home.HomeScreen
+import com.halimjr11.locaroo.view.screens.search.SearchScreen
+import com.halimjr11.locaroo.view.screens.journey.JourneyScreen
 
 @Composable
 fun AppNavGraph(
