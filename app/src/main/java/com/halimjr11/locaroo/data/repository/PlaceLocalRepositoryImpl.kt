@@ -1,16 +1,20 @@
 package com.halimjr11.locaroo.data.repository
 
 import com.halimjr11.locaroo.common.coroutines.CoroutinesDispatcherProvider
+import com.halimjr11.locaroo.data.local.database.FavoriteDao
 import com.halimjr11.locaroo.data.local.database.ScheduleDao
 import com.halimjr11.locaroo.data.mapper.LocalDataMapper
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.model.ScheduleDomain
 import com.halimjr11.locaroo.domain.repository.PlaceLocalRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class PlaceLocalRepositoryImpl @Inject constructor(
     private val dao: ScheduleDao,
+    private val favoriteDao: FavoriteDao,
     private val dispatcher: CoroutinesDispatcherProvider,
     private val mapper: LocalDataMapper
 ) : PlaceLocalRepository {
@@ -36,5 +40,25 @@ class PlaceLocalRepositoryImpl @Inject constructor(
 
     override suspend fun deletePlace(id: Long) = withContext(dispatcher.io) {
         dao.delete(id)
+    }
+
+    override suspend fun isFavorite(id: Long): Boolean = withContext(dispatcher.io) {
+        favoriteDao.isFavorite(id)
+    }
+
+    override suspend fun insertFavorite(place: PlaceDomain) = withContext(dispatcher.io) {
+        favoriteDao.insert(mapper.mapFavoriteToEntity(place))
+    }
+
+    override suspend fun deleteFavorite(id: Long) = withContext(dispatcher.io) {
+        favoriteDao.delete(id)
+    }
+
+    override suspend fun getFavorites(): Flow<List<PlaceDomain>> = withContext(dispatcher.io) {
+        favoriteDao.getAll().map {
+            it.map { entity ->
+                mapper.mapFavoriteToDomain(entity)
+            }
+        }
     }
 }

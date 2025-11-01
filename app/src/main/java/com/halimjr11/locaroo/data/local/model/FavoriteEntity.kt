@@ -4,10 +4,10 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.halimjr11.locaroo.utils.Constant.SCHEDULE_NAME
+import com.halimjr11.locaroo.utils.Constant.FAVORITE_NAME
 
-@Entity(tableName = SCHEDULE_NAME)
-data class ScheduleEntity(
+@Entity(FAVORITE_NAME)
+data class FavoriteEntity(
     @PrimaryKey()
     @ColumnInfo("id")
     val id: Long? = null,
@@ -16,7 +16,5 @@ data class ScheduleEntity(
     @ColumnInfo("location")
     val location: String? = null,
     @SerializedName("image_url")
-    val imageUrl: String? = null,
-    @ColumnInfo("date")
-    val date: String? = null
+    val imageUrl: String? = null
 )

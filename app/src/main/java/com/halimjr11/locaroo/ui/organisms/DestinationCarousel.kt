@@ -18,8 +18,7 @@ import com.halimjr11.locaroo.ui.molecules.DestinationCard
 fun DestinationCarousel(
     modifier: Modifier = Modifier,
     items: List<PlaceUi>,
-    onCardClick: (PlaceUi) -> Unit = {},
-    onBookmarkClick: (PlaceUi) -> Unit = {}
+    onCardClick: (PlaceUi) -> Unit = {}
 ) {
     LazyRow(
         modifier = modifier
@@ -40,9 +39,7 @@ fun DestinationCarousel(
                 name = dest.name,
                 location = dest.location,
                 rating = dest.rating,
-                bookmarkPainter = null,
-                onCardClick = { onCardClick(dest) },
-                onBookmarkClick = { onBookmarkClick(dest) }
+                onCardClick = { onCardClick(dest) }
             )
         }
     }

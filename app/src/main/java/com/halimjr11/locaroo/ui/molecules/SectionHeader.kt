@@ -10,13 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.halimjr11.locaroo.R
 
 @Composable
 fun SectionHeader(
     title: String,
-    actionLabel: String = "View all",
+    actionLabel: String = stringResource(R.string.view_all_text),
     onActionClick: () -> Unit = {}
 ) {
     Row(

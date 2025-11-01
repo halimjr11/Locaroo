@@ -2,7 +2,7 @@ package com.halimjr11.locaroo.view.viewmodels.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.halimjr11.locaroo.domain.repository.PlaceRepository
+import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
 import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.ui.mapper.toUi
 import com.halimjr11.locaroo.ui.model.PlaceUi
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
-    private val placeRepository: PlaceRepository
+    private val placeRemoteRepository: PlaceRemoteRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableStateFlow(false)
@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
             if (query.isBlank()) {
                 flowOf(UiState.Success(emptyList()))
             } else {
-                val result = placeRepository.searchPlaces(query)
+                val result = placeRemoteRepository.searchPlaces(query)
                 val uiState = when (result) {
                     is DomainResult.Success -> {
                         UiState.Success(result.data.map { it.toUi() })

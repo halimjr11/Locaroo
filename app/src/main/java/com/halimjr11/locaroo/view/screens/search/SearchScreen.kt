@@ -128,8 +128,7 @@ private fun SearchScreenContent(
 
         DestinationCarousel(
             items = items,
-            onCardClick = onCardClick,
-            onBookmarkClick = { /* no-op for now */ }
+            onCardClick = onCardClick
         )
     }
 }

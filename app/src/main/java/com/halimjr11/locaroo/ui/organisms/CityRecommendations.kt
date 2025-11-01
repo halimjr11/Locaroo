@@ -10,7 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.halimjr11.locaroo.R
 import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.DestinationCard
 import com.halimjr11.locaroo.ui.molecules.SectionHeader
@@ -18,11 +20,10 @@ import com.halimjr11.locaroo.ui.molecules.SectionHeader
 @Composable
 fun CityRecommendations(
     modifier: Modifier = Modifier,
-    title: String = "Rekomendasi kotamu",
+    title: String = stringResource(R.string.recommended_title),
     places: List<PlaceUi>,
     selectedCity: String? = null,
     onPlaceClick: (PlaceUi) -> Unit = {},
-    onBookmarkClick: (PlaceUi) -> Unit = {},
 ) {
     SectionHeader(title = title, onActionClick = {})
     LazyRow(
@@ -45,9 +46,7 @@ fun CityRecommendations(
                 name = dest.name,
                 location = dest.location,
                 rating = dest.rating,
-                bookmarkPainter = null,
                 onCardClick = { onPlaceClick(dest) },
-                onBookmarkClick = { onBookmarkClick(dest) }
             )
         }
     }

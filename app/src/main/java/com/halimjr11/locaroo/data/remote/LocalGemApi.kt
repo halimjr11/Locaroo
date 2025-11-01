@@ -23,7 +23,7 @@ interface LocalGemApi {
      * @param body The register request body.
      * @return An ApiResponse containing the registered user's data.
      */
-    @POST("/auth/register")
+    @POST("auth/register")
     suspend fun register(@Body body: RegisterRequest): ApiResponse<AuthDataResponse>
 
     /**
@@ -31,7 +31,7 @@ interface LocalGemApi {
      * @param body The login request body containing the email and password.
      * @return An ApiResponse containing the logged in user's data.
      */
-    @POST("/auth/login")
+    @POST("auth/login")
     suspend fun login(@Body body: LoginRequest): ApiResponse<AuthDataResponse>
 
     /**
@@ -39,7 +39,7 @@ interface LocalGemApi {
      * @param body The refresh request body containing the refresh token.
      * @return An ApiResponse containing the refreshed user's token.
      */
-    @POST("/auth/refresh")
+    @POST("auth/refresh")
     suspend fun refresh(@Body body: RefreshRequest): ApiResponse<AuthTokenResponse>
 
     /**
@@ -50,7 +50,7 @@ interface LocalGemApi {
      * @param limit Optional limit to the number of places to retrieve. Defaults to 20.
      * @return An ApiResponse containing a list of PlaceResponse objects.
      */
-    @GET("/places")
+    @GET("places")
     suspend fun getPlaces(
         @Query("search") search: String? = null,
         @Query("tags") tags: List<String>? = null,
@@ -63,7 +63,7 @@ interface LocalGemApi {
      * @param id The ID of the place to retrieve.
      * @return An ApiResponse containing a PlaceResponse object.
      */
-    @GET("/places/{id}")
+    @GET("places/{id}")
     suspend fun getPlace(@Path("id") id: Long): ApiResponse<PlaceResponse>
 
     /**
@@ -71,7 +71,7 @@ interface LocalGemApi {
      * @param id The ID of the place to retrieve reviews for.
      * @return An ApiResponse containing a list of ReviewResponse objects.
      */
-    @GET("/places/{id}/reviews")
+    @GET("places/{id}/reviews")
     suspend fun getPlaceReviews(@Path("id") id: Long): ApiResponse<List<ReviewResponse>>
 
     /**
@@ -86,7 +86,7 @@ interface LocalGemApi {
      * @return An ApiResponse containing a PlaceResponse object if successful, or an ErrorResponse object if not.
      */
     @Multipart
-    @POST("/places")
+    @POST("places")
     suspend fun createPlace(
         @Part("name") name: RequestBody,
         @Part("location") location: RequestBody,

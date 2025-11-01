@@ -2,6 +2,7 @@ package com.halimjr11.locaroo.domain.repository
 
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.model.ScheduleDomain
+import kotlinx.coroutines.flow.Flow
 
 interface PlaceLocalRepository {
     /**
@@ -23,4 +24,30 @@ interface PlaceLocalRepository {
      * @param id The id of the place to be deleted.
      */
     suspend fun deletePlace(id: Long)
+
+    /**
+     * Checks if a place is favorited.
+     * @param id The id of the place to check.
+     * @return true if the place is favorited, false otherwise.
+     */
+    suspend fun isFavorite(id: Long): Boolean
+
+    /**
+     * Inserts a place into the database.
+     * @param place The place to be inserted.
+     * @param date The date to which the place belongs, in the format "yyyy-MM-dd".
+     */
+    suspend fun insertFavorite(place: PlaceDomain)
+
+    /**
+     * Deletes a place from the database.
+     * @param id The id of the place to be deleted.
+     */
+    suspend fun deleteFavorite(id: Long)
+
+    /**
+     * Retrieves all favorite places from the database.
+     * @return A list of all favorite places in the database.
+     */
+    suspend fun getFavorites(): Flow<List<PlaceDomain>>
 }

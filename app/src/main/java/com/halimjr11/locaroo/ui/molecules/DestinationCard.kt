@@ -33,9 +33,7 @@ fun DestinationCard(
     name: String,
     location: String,
     rating: Double,
-    bookmarkPainter: Painter? = null,
-    onCardClick: () -> Unit = {},
-    onBookmarkClick: () -> Unit = {}
+    onCardClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -117,7 +115,6 @@ fun DestinationCardPreview() {
         name = "Bali",
         location = "Indonesia",
         rating = 4.5,
-        onCardClick = {},
-        onBookmarkClick = {}
+        onCardClick = {}
     )
 }

@@ -43,6 +43,7 @@ import com.halimjr11.locaroo.view.viewmodels.detail.DetailViewModel
 fun DetailScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailViewModel = hiltViewModel(),
+    onBack: () -> Unit
 ) {
     val state by viewModel.detailState.collectAsState()
 
@@ -58,7 +59,9 @@ fun DetailScreen(
         is UiState.Success -> {
             DetailScreenContent(
                 modifier,
-                (state as UiState.Success<PlaceUi>).data
+                (state as UiState.Success<PlaceUi>).data,
+                isFavorite = (state as UiState.Success<PlaceUi>).data,
+                onBack = onBack
             )
         }
     }
@@ -68,14 +71,15 @@ fun DetailScreen(
 private fun DetailScreenContent(
     modifier: Modifier = Modifier,
     place: PlaceUi,
+    isFavorite: Boolean,
     onBack: () -> Unit = {},
-    onBookmark: () -> Unit = {}
+    onFavorite: () -> Unit = {}
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         TopImageHeader(
             image = place.imageUrl ?: "",
             onBack = onBack,
-            onBookmark = onBookmark
+            onFavorite = onFavorite
         )
         Surface(
             modifier = Modifier

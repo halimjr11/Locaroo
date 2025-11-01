@@ -3,7 +3,8 @@ package com.halimjr11.locaroo.view.viewmodels.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.halimjr11.locaroo.domain.repository.PlaceRepository
+import com.halimjr11.locaroo.domain.repository.PlaceLocalRepository
+import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
 import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.ui.mapper.toUi
 import com.halimjr11.locaroo.ui.model.PlaceUi
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val placeRepository: PlaceRepository,
+    private val placeRemoteRepository: PlaceRemoteRepository,
+    private val placeLocalRepository: PlaceLocalRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -35,7 +37,7 @@ class DetailViewModel @Inject constructor(
      * @param id The id of the place.
      */
     private fun loadPlace(id: Long) = viewModelScope.launch {
-        val result = placeRepository.getPlaceById(id)
+        val result = placeRemoteRepository.getPlaceById(id)
         _detailState.value = when (result) {
             is DomainResult.Success -> {
                 UiState.Success(result.data.toUi())

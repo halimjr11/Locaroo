@@ -3,4 +3,11 @@
     <string name="error_message">There was an error</string>
     <string name="empty_title">No results</string>
     <string name="empty_messages">No results found for query: %1$s</string>
+    <string name="best_destination_title">Best destination</string>
+    <string name="recommended_title">Rekomendasi kotamu</string>
+    <string name="tagline_1">Explore the</string>
+    <string name="tagline_2">"Beautiful "</string>
+    <string name="tagline_3">world!</string>
+    <string name="view_all_text">View all</string>
+    <string name="favorite">Favorite</string>
 </resources>

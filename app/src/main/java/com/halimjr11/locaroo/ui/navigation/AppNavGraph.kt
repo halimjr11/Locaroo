@@ -15,11 +15,16 @@ fun AppNavGraph(
         startDestination = NavRoute.Home.route,
         modifier = modifier
     ) {
-        homeNavGraph()
+        homeNavGraph {
+            navController.navigate("detail/${it.id}")
+        }
         searchNavGraph(
             onBack = { navController.popBackStack() },
             onPlaceClick = { navController.navigate("detail/${it.id}") }
         )
         journeyNavGraph()
+        detailNavGraph {
+            navController.popBackStack()
+        }
     }
 }

@@ -4,7 +4,7 @@ import com.halimjr11.locaroo.data.mapper.RemoteDataMapper
 import com.halimjr11.locaroo.data.remote.LocalGemApi
 import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.model.PlaceDomain
-import com.halimjr11.locaroo.domain.repository.PlaceRepository
+import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -13,10 +13,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
-class PlaceRepositoryImpl @Inject constructor(
+class PlaceRemoteRepositoryImpl @Inject constructor(
     private val api: LocalGemApi,
     private val mapper: RemoteDataMapper
-) : PlaceRepository, BaseRepository() {
+) : PlaceRemoteRepository, BaseRepository() {
 
     override suspend fun getPlaces(page: Int, pageSize: Int): DomainResult<List<PlaceDomain>> {
         return safeApiCall {
