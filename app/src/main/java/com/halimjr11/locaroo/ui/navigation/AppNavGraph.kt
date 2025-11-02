@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 
+
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
@@ -26,5 +27,6 @@ fun AppNavGraph(
         detailNavGraph {
             navController.popBackStack()
         }
+        authNavGraph(navController)
     }
 }

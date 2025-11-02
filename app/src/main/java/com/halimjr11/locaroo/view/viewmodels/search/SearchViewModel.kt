@@ -66,5 +66,4 @@ class SearchViewModel @Inject constructor(
     fun updateQuery(newQuery: String) {
         _query.value = newQuery
     }
-
 }

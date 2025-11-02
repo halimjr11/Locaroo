@@ -25,10 +25,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.halimjr11.locaroo.R
 import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.ErrorState
 import com.halimjr11.locaroo.ui.molecules.IconTextRow
@@ -46,10 +48,17 @@ fun DetailScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.detailState.collectAsState()
+    val isFavorite by viewModel.isFavorite.collectAsState()
 
     when (state) {
         is UiState.Error -> {
-            ErrorState(message = (state as UiState.Error).message)
+            ErrorState(
+                title = "Error",
+                message = (state as UiState.Error).message,
+                onRetry = {
+                    viewModel.retry()
+                }
+            )
         }
 
         is UiState.Loading -> {
@@ -60,8 +69,11 @@ fun DetailScreen(
             DetailScreenContent(
                 modifier,
                 (state as UiState.Success<PlaceUi>).data,
-                isFavorite = (state as UiState.Success<PlaceUi>).data,
-                onBack = onBack
+                isFavorite = isFavorite,
+                onBack = onBack,
+                onFavorite = {
+                    viewModel.toggleFavorite()
+                }
             )
         }
     }
@@ -79,7 +91,10 @@ private fun DetailScreenContent(
         TopImageHeader(
             image = place.imageUrl ?: "",
             onBack = onBack,
-            onFavorite = onFavorite
+            onFavorite = onFavorite,
+            isFavorite = isFavorite,
+            favoriteIcon = painterResource(R.drawable.ic_favorite),
+            backIcon = painterResource(R.drawable.ic_back)
         )
         Surface(
             modifier = Modifier
@@ -156,7 +171,10 @@ private fun DetailScreenPreviewLight() {
                 reviewsCount = 10,
                 latitude = 0.0,
                 longitude = 0.0
-            )
+            ),
+            isFavorite = false,
+            onBack = {},
+            onFavorite = {}
         )
     }
 }
@@ -176,7 +194,10 @@ private fun DetailScreenPreviewDark() {
                 reviewsCount = 10,
                 latitude = 0.0,
                 longitude = 0.0
-            )
+            ),
+            isFavorite = false,
+            onBack = {},
+            onFavorite = {}
         )
     }
 }

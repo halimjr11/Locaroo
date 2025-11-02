@@ -10,4 +10,5 @@
     <string name="tagline_3">world!</string>
     <string name="view_all_text">View all</string>
     <string name="favorite">Favorite</string>
+    <string name="back">Back</string>
 </resources>

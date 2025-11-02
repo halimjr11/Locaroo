@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,10 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,57 +39,64 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.halimjr11.locaroo.ui.model.ScheduleItemUi
+import com.halimjr11.locaroo.ui.molecules.ErrorState
+import com.halimjr11.locaroo.ui.state.UiState
 import com.halimjr11.locaroo.ui.theme.LocarooTheme
-import java.time.DayOfWeek
+import com.halimjr11.locaroo.view.viewmodels.journey.JourneyViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
 
 @Composable
-fun JourneyScreen(modifier: Modifier = Modifier) {
-    val today = LocalDate.now()
-    val startOfWeek =
-        remember(today) { today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY)) }
-    val daysOfWeek = remember(startOfWeek) { (0..6).map { startOfWeek.plusDays(it.toLong()) } }
+fun JourneyScreen(
+    modifier: Modifier = Modifier,
+    viewModel: JourneyViewModel = hiltViewModel(),
+) {
+    val currentStartOfWeek by viewModel.startOfWeek.collectAsState()
+    val daysOfWeek by viewModel.daysOfWeek.collectAsState()
+    val journeySchedule by viewModel.journeySchedule.collectAsState()
 
-    var selectedDate by remember { mutableStateOf(today) }
-
-    val all = remember(daysOfWeek) {
-        buildList {
-            daysOfWeek.forEachIndexed { i, d ->
-                add(
-                    ScheduleItemUi(
-                        i + 1L,
-                        d.format(DateTimeFormatter.ofPattern("d MMMM")),
-                        "Niladi Reservoir",
-                        "Tekangir, Sunonyi"
-                    )
-                )
-                if (i % 2 == 0) add(
-                    ScheduleItemUi(
-                        100 + i + 1L,
-                        d.format(DateTimeFormatter.ofPattern("d MMMM")),
-                        "High Rech Park",
-                        "Zero Point, Sylhet"
-                    )
+    when (journeySchedule) {
+        is UiState.Success -> {
+            val schedules = (journeySchedule as UiState.Success).data
+            val all = schedules.map {
+                ScheduleItemUi(
+                    it.id,
+                    it.date,
+                    it.name,
+                    it.location
                 )
             }
+
+            val itemsForDay = remember(
+                viewModel.dateSelected,
+                all
+            ) { all.filter { it.date == viewModel.dateSelected.format(DateTimeFormatter.ofPattern("d MMMM")) } }
+
+            JourneyScreenContent(
+                modifier = modifier,
+                items = itemsForDay,
+                selectedDate = viewModel.dateSelected,
+                daysOfWeek = daysOfWeek,
+                onPrev = { viewModel.updateStartOfWeek(currentStartOfWeek.minusWeeks(1)) },
+                onNext = { viewModel.updateStartOfWeek(currentStartOfWeek.plusWeeks(1)) },
+                onSelect = { viewModel.updateDateSelected(it) }
+            )
+        }
+
+        is UiState.Error -> {
+            ErrorState(
+                title = "Error",
+                message = (journeySchedule as UiState.Error).message,
+                onRetry = { viewModel.loadJourneySchedule() }
+            )
+        }
+
+        is UiState.Loading -> {
+            CircularProgressIndicator()
         }
     }
-    val itemsForDay = remember(
-        selectedDate,
-        all
-    ) { all.filter { it.date == selectedDate.format(DateTimeFormatter.ofPattern("d MMMM")) } }
-
-    JourneyScreenContent(
-        items = itemsForDay,
-        selectedDate = selectedDate,
-        daysOfWeek = daysOfWeek,
-        onPrev = { selectedDate = selectedDate.minusDays(1) },
-        onNext = { selectedDate = selectedDate.plusDays(1) },
-        onSelect = { selectedDate = it }
-    )
 }
 
 @Composable
@@ -212,7 +219,7 @@ private fun WeekHeader(
                         Spacer(Modifier.height(2.dp))
                         Text(
                             d.format(dayFormatter),
-                            style = MaterialTheme.typography.titleSmall,
+                            style = MaterialTheme.typography.titleMedium,
                             color = fg
                         )
                     }

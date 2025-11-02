@@ -59,8 +59,9 @@ fun TopImageHeader(
             if (backIcon != null) {
                 AppIconButton(
                     painter = backIcon,
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.back),
                     variant = IconButtonVariant.Tinted,
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     onClick = onBack
                 )
             }

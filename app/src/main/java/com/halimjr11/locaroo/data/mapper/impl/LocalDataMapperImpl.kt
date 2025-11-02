@@ -20,11 +20,11 @@ class LocalDataMapperImpl : LocalDataMapper {
 
     override suspend fun mapScheduleToEntity(scheduleDomain: ScheduleDomain): ScheduleEntity {
         return ScheduleEntity(
-            id = scheduleDomain.id.orLongZero(),
-            name = scheduleDomain.name.orEmpty(),
-            date = scheduleDomain.date.orEmpty(),
-            imageUrl = scheduleDomain.imageUrl.orEmpty(),
-            location = scheduleDomain.location.orEmpty(),
+            id = scheduleDomain.id,
+            name = scheduleDomain.name,
+            date = scheduleDomain.date,
+            imageUrl = scheduleDomain.imageUrl,
+            location = scheduleDomain.location,
         )
     }
 
@@ -39,10 +39,10 @@ class LocalDataMapperImpl : LocalDataMapper {
 
     override suspend fun mapFavoriteToEntity(placeDomain: PlaceDomain): FavoriteEntity {
         return FavoriteEntity(
-            id = placeDomain.id.orLongZero(),
-            name = placeDomain.name.orEmpty(),
-            location = placeDomain.location.orEmpty(),
-            imageUrl = placeDomain.imageUrl.orEmpty(),
+            id = placeDomain.id,
+            name = placeDomain.name,
+            location = placeDomain.location,
+            imageUrl = placeDomain.imageUrl,
         )
     }
 }

@@ -15,8 +15,8 @@ import javax.inject.Inject
 class PlaceLocalRepositoryImpl @Inject constructor(
     private val dao: ScheduleDao,
     private val favoriteDao: FavoriteDao,
-    private val dispatcher: CoroutinesDispatcherProvider,
-    private val mapper: LocalDataMapper
+    private val mapper: LocalDataMapper,
+    private val dispatcher: CoroutinesDispatcherProvider
 ) : PlaceLocalRepository {
     override suspend fun getPlaces(
         date: String
