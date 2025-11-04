@@ -3,6 +3,7 @@ package com.halimjr11.locaroo.view.screens.journey
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,13 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,12 +37,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.halimjr11.locaroo.ui.model.ScheduleItemUi
+import coil.compose.AsyncImage
+import com.halimjr11.locaroo.R
+import com.halimjr11.locaroo.ui.model.ScheduleUi
 import com.halimjr11.locaroo.ui.molecules.ErrorState
 import com.halimjr11.locaroo.ui.state.UiState
 import com.halimjr11.locaroo.ui.theme.LocarooTheme
@@ -57,44 +64,43 @@ fun JourneyScreen(
     val daysOfWeek by viewModel.daysOfWeek.collectAsState()
     val journeySchedule by viewModel.journeySchedule.collectAsState()
 
-    when (journeySchedule) {
-        is UiState.Success -> {
-            val schedules = (journeySchedule as UiState.Success).data
-            val all = schedules.map {
-                ScheduleItemUi(
-                    it.id,
-                    it.date,
-                    it.name,
-                    it.location
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
+
+        when (journeySchedule) {
+            is UiState.Success -> {
+                val schedules = (journeySchedule as UiState.Success).data
+
+                JourneyScreenContent(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .wrapContentSize(),
+                    items = schedules,
+                    selectedDate = viewModel.dateSelected,
+                    daysOfWeek = daysOfWeek,
+                    onPrev = { viewModel.updateStartOfWeek(currentStartOfWeek.minusWeeks(1)) },
+                    onNext = { viewModel.updateStartOfWeek(currentStartOfWeek.plusWeeks(1)) },
+                    onSelect = { viewModel.updateDateSelected(it) }
                 )
             }
 
-            val itemsForDay = remember(
-                viewModel.dateSelected,
-                all
-            ) { all.filter { it.date == viewModel.dateSelected.format(DateTimeFormatter.ofPattern("d MMMM")) } }
+            is UiState.Error -> {
+                ErrorState(
+                    modifier = modifier.align(Alignment.Center),
+                    title = stringResource(R.string.error_title),
+                    message = (journeySchedule as UiState.Error).message,
+                    onRetry = { viewModel.loadJourneySchedule() }
+                )
+            }
 
-            JourneyScreenContent(
-                modifier = modifier,
-                items = itemsForDay,
-                selectedDate = viewModel.dateSelected,
-                daysOfWeek = daysOfWeek,
-                onPrev = { viewModel.updateStartOfWeek(currentStartOfWeek.minusWeeks(1)) },
-                onNext = { viewModel.updateStartOfWeek(currentStartOfWeek.plusWeeks(1)) },
-                onSelect = { viewModel.updateDateSelected(it) }
-            )
-        }
-
-        is UiState.Error -> {
-            ErrorState(
-                title = "Error",
-                message = (journeySchedule as UiState.Error).message,
-                onRetry = { viewModel.loadJourneySchedule() }
-            )
-        }
-
-        is UiState.Loading -> {
-            CircularProgressIndicator()
+            is UiState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }
@@ -102,7 +108,7 @@ fun JourneyScreen(
 @Composable
 private fun JourneyScreenContent(
     modifier: Modifier = Modifier,
-    items: List<ScheduleItemUi>,
+    items: List<ScheduleUi>,
     selectedDate: LocalDate,
     daysOfWeek: List<LocalDate>,
     onPrev: () -> Unit,
@@ -110,17 +116,28 @@ private fun JourneyScreenContent(
     onSelect: (LocalDate) -> Unit,
 ) {
     Surface(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            TopBar()
-            WeekHeader(
-                date = selectedDate,
-                daysOfWeek = daysOfWeek,
-                onPrev = onPrev,
-                onNext = onNext,
-                onSelect = onSelect
+        if (items.isNotEmpty()) {
+            Column(modifier = modifier.fillMaxSize()) {
+                TopBar()
+                WeekHeader(
+                    date = selectedDate,
+                    daysOfWeek = daysOfWeek,
+                    onPrev = onPrev,
+                    onNext = onNext,
+                    onSelect = onSelect
+                )
+                SectionHeader()
+                ScheduleList(items)
+            }
+        } else {
+            ErrorState(
+                modifier = modifier
+                    .fillMaxSize()
+                    .wrapContentSize(),
+                title = stringResource(R.string.error_title),
+                message = stringResource(R.string.error_message),
+                onRetry = {}
             )
-            SectionHeader()
-            ScheduleList(items)
         }
     }
 }
@@ -252,7 +269,7 @@ private fun SectionHeader() {
 }
 
 @Composable
-private fun ScheduleList(items: List<ScheduleItemUi>) {
+private fun ScheduleList(items: List<ScheduleUi>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -264,7 +281,7 @@ private fun ScheduleList(items: List<ScheduleItemUi>) {
 }
 
 @Composable
-private fun ScheduleCard(item: ScheduleItemUi) {
+private fun ScheduleCard(item: ScheduleUi) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -273,22 +290,16 @@ private fun ScheduleCard(item: ScheduleItemUi) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-            // Thumbnail placeholder
-            Column(
+            AsyncImage(
+                model = item.imageUrl,
+                contentDescription = item.name,
                 modifier = Modifier
-                    .height(56.dp)
-                    .width(56.dp)
-                    .clip(MaterialTheme.shapes.medium)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.LocationOn,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+                    .size(56.dp)
+                    .clip(MaterialTheme.shapes.medium),
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.ic_launcher_background),
+                error = painterResource(id = R.drawable.ic_launcher_background)
+            )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -298,7 +309,7 @@ private fun ScheduleCard(item: ScheduleItemUi) {
                     modifier = Modifier.padding(bottom = 2.dp)
                 )
                 Text(
-                    text = item.title,
+                    text = item.name,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -323,7 +334,15 @@ private fun ScheduleCard(item: ScheduleItemUi) {
 @Composable
 fun PreviewJourneyLight() {
     LocarooTheme(darkTheme = false, dynamicColor = false) {
-        JourneyScreen()
+        JourneyScreenContent(
+            modifier = Modifier,
+            items = emptyList(),
+            selectedDate = LocalDate.now(),
+            daysOfWeek = emptyList(),
+            onPrev = {},
+            onNext = {},
+            onSelect = {}
+        )
     }
 }
 
@@ -331,6 +350,14 @@ fun PreviewJourneyLight() {
 @Composable
 fun PreviewJourneyDark() {
     LocarooTheme(darkTheme = true, dynamicColor = false) {
-        JourneyScreen()
+        JourneyScreenContent(
+            modifier = Modifier,
+            items = emptyList(),
+            selectedDate = LocalDate.now(),
+            daysOfWeek = emptyList(),
+            onPrev = {},
+            onNext = {},
+            onSelect = {}
+        )
     }
 }

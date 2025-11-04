@@ -9,7 +9,7 @@ import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.repository.PlaceLocalRepository
 import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
 import com.halimjr11.locaroo.domain.utils.DomainResult
-import com.halimjr11.locaroo.ui.mapper.toUi
+import com.halimjr11.locaroo.ui.mapper.UiDataMapper
 import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +24,7 @@ class DetailViewModel @Inject constructor(
     private val placeRemoteRepository: PlaceRemoteRepository,
     private val placeLocalRepository: PlaceLocalRepository,
     private val dispatcher: CoroutinesDispatcherProvider,
+    private val uiDataMapper: UiDataMapper,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -51,7 +52,7 @@ class DetailViewModel @Inject constructor(
         _detailState.value = when (result) {
             is DomainResult.Success -> {
                 placeDomain = result.data
-                UiState.Success(result.data.toUi())
+                UiState.Success(uiDataMapper.mapPlaceToUI(result.data))
             }
 
             is DomainResult.Error -> {

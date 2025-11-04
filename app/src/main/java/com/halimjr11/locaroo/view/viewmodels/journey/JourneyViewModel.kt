@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.halimjr11.locaroo.common.DateManager
 import com.halimjr11.locaroo.common.coroutines.CoroutinesDispatcherProvider
 import com.halimjr11.locaroo.domain.repository.PlaceLocalRepository
-import com.halimjr11.locaroo.ui.mapper.toUi
+import com.halimjr11.locaroo.ui.mapper.UiDataMapper
 import com.halimjr11.locaroo.ui.model.ScheduleUi
 import com.halimjr11.locaroo.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,8 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JourneyViewModel @Inject constructor(
-    private val placeLocalRepository: PlaceLocalRepository,
     private val dateManager: DateManager,
+    private val placeLocalRepository: PlaceLocalRepository,
+    private val uiDataMapper: UiDataMapper,
     private val dispatcher: CoroutinesDispatcherProvider
 ) : ViewModel() {
     var dateSelected: LocalDate = dateManager.today()
@@ -49,7 +50,7 @@ class JourneyViewModel @Inject constructor(
     fun loadJourneySchedule() = viewModelScope.launch(dispatcher.io) {
         val result = placeLocalRepository.getPlaces(dateSelected.toString())
         _journeySchedule.value = if (result.isNotEmpty()) {
-            UiState.Success(result.map { it.toUi() })
+            UiState.Success(result.map { uiDataMapper.mapScheduleToUI(it) })
         } else {
             UiState.Error("No data found")
         }

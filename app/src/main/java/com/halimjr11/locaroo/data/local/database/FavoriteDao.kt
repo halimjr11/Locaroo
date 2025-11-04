@@ -13,7 +13,7 @@ interface FavoriteDao {
     suspend fun insert(favoriteEntity: FavoriteEntity)
 
     @Query("SELECT * FROM favorite")
-    suspend fun getAll(): Flow<List<FavoriteEntity>>
+    fun getAll(): Flow<List<FavoriteEntity>>
 
     @Query("SELECT EXISTS(SELECT 1 FROM favorite WHERE id = :id)")
     suspend fun isFavorite(id: Long): Boolean

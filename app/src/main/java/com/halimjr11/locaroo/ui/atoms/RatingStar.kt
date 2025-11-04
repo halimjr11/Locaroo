@@ -2,15 +2,17 @@ package com.halimjr11.locaroo.ui.atoms
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.StarHalf
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarOutline
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 /**
  * Lightweight rating stars without icon dependency using unicode stars.
@@ -32,14 +34,28 @@ fun RatingStar(
 
     Row(modifier = modifier) {
         repeat(full) {
-            Text("★", color = filledColor, fontSize = size.value.sp, fontWeight = FontWeight.SemiBold)
+            Icon(
+                modifier = Modifier.size(size),
+                imageVector = Icons.Filled.Star,
+                contentDescription = null,
+                tint = filledColor
+            )
         }
         repeat(half) {
-            // Half star approximated using different glyph; keep same color for visibility
-            Text("⯪", color = filledColor, fontSize = size.value.sp, fontWeight = FontWeight.SemiBold)
+            Icon(
+                modifier = Modifier.size(size),
+                imageVector = Icons.AutoMirrored.Filled.StarHalf,
+                contentDescription = null,
+                tint = filledColor
+            )
         }
         repeat(empty) {
-            Text("☆", color = emptyColor, fontSize = size.value.sp)
+            Icon(
+                modifier = Modifier.size(size),
+                imageVector = Icons.Filled.StarOutline,
+                contentDescription = null,
+                tint = emptyColor
+            )
         }
     }
 }

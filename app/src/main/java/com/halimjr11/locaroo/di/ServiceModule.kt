@@ -1,15 +1,22 @@
 package com.halimjr11.locaroo.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
+import com.halimjr11.locaroo.common.AuthEventManager
 import com.halimjr11.locaroo.data.remote.LocalGemApi
+import com.halimjr11.locaroo.data.remote.interceptor.AuthInterceptor
+import com.halimjr11.locaroo.data.remote.interceptor.SessionInterceptor
+import com.halimjr11.locaroo.domain.repository.AuthLocalRepository
 import com.halimjr11.locaroo.utils.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -63,6 +70,41 @@ class ServiceModule {
     }
 
     /**
+     * Provides an instance of {@link AuthInterceptor} which is used to intercept and handle HTTP requests to the API.
+     * The interceptor is configured with:
+     * - The {@link DataStore<Preferences>} to access the local storage of the user data.
+     *
+     * @param store The local data store instance.
+     * @return An instance of {@link AuthInterceptor}.
+     */
+    @Singleton
+    @Provides
+    @Named(Constant.AUTH)
+    fun provideAuthInterceptor(store: DataStore<Preferences>): Interceptor {
+        return AuthInterceptor(store)
+    }
+
+    /**
+     * Provides an instance of {@link SessionInterceptor} which is used to intercept and handle HTTP responses from the API.
+     * The interceptor is configured with:
+     * - The {@link AuthLocalRepository} to access the local storage of the user data.
+     * - The {@link AuthEventManager} to handle unauthorized responses.
+     *
+     * @param localRepository The local repository instance.
+     * @param authEventListener The event listener to handle unauthorized responses.
+     * @return An instance of {@link SessionInterceptor}.
+     */
+    @Singleton
+    @Provides
+    @Named(Constant.SESSION)
+    fun provideSessionInterceptor(
+        localRepository: AuthLocalRepository,
+        authEventManager: AuthEventManager
+    ): Interceptor {
+        return SessionInterceptor(localRepository, authEventManager)
+    }
+
+    /**
      * Provides an instance of {@link OkHttpClient} which is used as the HTTP client.
      * The client is configured with:
      * - The {@link HttpLoggingInterceptor} to log the HTTP requests and responses.
@@ -77,12 +119,16 @@ class ServiceModule {
     @Singleton
     @Provides
     fun provideOkHttpClient(
+        @Named(Constant.AUTH) authInterceptor: Interceptor,
+        @Named(Constant.SESSION) sessionInterceptor: Interceptor,
         logging: HttpLoggingInterceptor,
         chucker: ChuckerInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(logging)
-            .addInterceptor(chucker)
+            .addInterceptor(interceptor = logging)
+            .addInterceptor(interceptor = chucker)
+            .addInterceptor(interceptor = authInterceptor)
+            .addInterceptor(interceptor = sessionInterceptor)
             .connectTimeout(120, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .build()
@@ -99,7 +145,7 @@ class ServiceModule {
     @Singleton
     @Provides
     @Named(Constant.RETROFIT)
-    fun provideRetrofitMoFiz(
+    fun provideRetrofit(
         @Named(Constant.BASE_KEY) baseUrl: String,
         client: OkHttpClient
     ): Retrofit {

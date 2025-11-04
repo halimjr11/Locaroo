@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 
-
 @Composable
 fun AppNavGraph(
     navController: NavHostController,
@@ -16,17 +15,26 @@ fun AppNavGraph(
         startDestination = NavRoute.Home.route,
         modifier = modifier
     ) {
-        homeNavGraph {
-            navController.navigate("detail/${it.id}")
-        }
+        homeNavGraph(
+            action = {
+                navController.navigate("detail/${it.id}")
+            },
+            onAddPlace = {
+                navController.navigate(NavRoute.Create.route)
+            }
+        )
         searchNavGraph(
             onBack = { navController.popBackStack() },
             onPlaceClick = { navController.navigate("detail/${it.id}") }
         )
         journeyNavGraph()
+        favoriteNavGraph(
+            onPlaceClick = { navController.navigate("detail/${it.id}") }
+        )
         detailNavGraph {
             navController.popBackStack()
         }
         authNavGraph(navController)
+        createNavGraph(navController)
     }
 }

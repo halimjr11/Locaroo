@@ -47,26 +47,28 @@ fun RegisterScreen(
     val context = LocalContext.current
     val state by viewModel.registerState.collectAsState()
 
-    when (state) {
-        is UiState.Loading -> CircularProgressIndicator()
-        is UiState.Error -> Toast.makeText(
-            context,
-            (state as UiState.Error).message,
-            Toast.LENGTH_SHORT
-        ).show()
+    Box(modifier = modifier.fillMaxSize()) {
+        RegisterScreenContent(
+            modifier = modifier,
+            onSignUp = { name, email, password ->
+                viewModel.register(name, email, password)
+            },
+            onNavigateToLogin = onNavigateToLogin
+        )
 
-        is UiState.Success -> {
-            onNavigateToLogin()
+        when (state) {
+            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Error -> Toast.makeText(
+                context,
+                (state as UiState.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
+
+            is UiState.Success -> {
+                onNavigateToLogin()
+            }
         }
     }
-
-    RegisterScreenContent(
-        modifier = modifier,
-        onSignUp = { name, email, password ->
-            viewModel.register(name, email, password)
-        },
-        onNavigateToLogin = onNavigateToLogin
-    )
 }
 
 @Composable

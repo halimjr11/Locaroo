@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,9 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.halimjr11.locaroo.R
+import com.halimjr11.locaroo.ui.atoms.RatingStar
 
 @Composable
-fun DestinationCard(
+fun FavoriteCard(
     imageUrl: String,
     name: String,
     location: String,
@@ -38,14 +38,14 @@ fun DestinationCard(
 ) {
     Card(
         modifier = Modifier
-            .width(200.dp)
+            .fillMaxWidth()
             .wrapContentHeight()
             .background(MaterialTheme.colorScheme.surface)
             .clickable { onCardClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
-        Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+        Row(modifier = Modifier.fillMaxWidth()) {
             // Image Section
             Box {
                 AsyncImage(
@@ -55,29 +55,19 @@ fun DestinationCard(
                     error = painterResource(id = R.drawable.ic_launcher_background),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(140.dp)
-                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                        .width(100.dp)
+                        .height(100.dp)
                 )
             }
+
             // Content Section
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
                 )
 
                 Spacer(Modifier.height(4.dp))
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "★ $rating",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(start = 0.dp)
-                    )
-                }
-
-                Spacer(Modifier.height(6.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -87,6 +77,8 @@ fun DestinationCard(
                 }
 
                 Spacer(Modifier.height(8.dp))
+
+                RatingStar(rating = rating)
             }
         }
     }
@@ -94,11 +86,11 @@ fun DestinationCard(
 
 @Preview
 @Composable
-fun DestinationCardPreview() {
-    DestinationCard(
+fun FavoriteCardPreview() {
+    FavoriteCard(
         imageUrl = "https://images.unsplash.com/photo-1511485977113-f34c92461ad9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80",
-        name = "Bali",
-        location = "Indonesia",
+        name = "Pantai Kuta",
+        location = "Bali",
         rating = 4.5,
     )
 }

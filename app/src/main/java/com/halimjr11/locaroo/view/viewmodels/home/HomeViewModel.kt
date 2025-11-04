@@ -2,9 +2,10 @@ package com.halimjr11.locaroo.view.viewmodels.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.halimjr11.locaroo.common.coroutines.CoroutinesDispatcherProvider
 import com.halimjr11.locaroo.domain.usecase.GetHomeDataUseCase
 import com.halimjr11.locaroo.domain.utils.DomainResult
-import com.halimjr11.locaroo.ui.mapper.toUi
+import com.halimjr11.locaroo.ui.mapper.UiDataMapper
 import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.state.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +17,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getHomeDataUseCase: GetHomeDataUseCase
+    private val getHomeDataUseCase: GetHomeDataUseCase,
+    private val dispatcher: CoroutinesDispatcherProvider,
+    private val uiDataMapper: UiDataMapper
 ) : ViewModel() {
 
     private val _places = MutableStateFlow<UiState<Pair<List<PlaceUi>, String>>>(UiState.Loading)
@@ -36,11 +39,16 @@ class HomeViewModel @Inject constructor(
      * object. If the result is an error, it wraps the error message in a
      * [UiState.Error] object.
      */
-    fun loadPlaces() = viewModelScope.launch {
+    fun loadPlaces() = viewModelScope.launch(dispatcher.io) {
         val result = getHomeDataUseCase()
         _places.value = when (result) {
             is DomainResult.Success -> {
-                UiState.Success(Pair(result.data.first.map { it.toUi() }, result.data.second))
+                UiState.Success(
+                    Pair(
+                        result.data.first.map { uiDataMapper.mapPlaceToUI(it) },
+                        result.data.second
+                    )
+                )
             }
 
             is DomainResult.Error -> {

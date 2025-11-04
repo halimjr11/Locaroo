@@ -1,4 +1,4 @@
-package com.halimjr11.locaroo.ui.organisms
+package com.halimjr11.locaroo.view.screens.about
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +22,8 @@ import com.halimjr11.locaroo.ui.theme.LocarooTheme
 @Composable
 fun AboutScreen(
     modifier: Modifier = Modifier,
-    name: String = "John Doe",
-    email: String = "john.doe@example.com",
+    name: String = "Nurhaq Halim",
+    email: String = "nurhaqhalim11@gmail.com",
     imageRes: Int = R.drawable.ic_launcher_foreground
 ) {
     Column(

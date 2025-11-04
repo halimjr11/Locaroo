@@ -7,4 +7,7 @@ sealed class NavRoute(val route: String) {
     data object Search : NavRoute("search")
     data object Detail : NavRoute("detail/{placeId}")
     data object Journey : NavRoute("journey")
+    data object Favorite : NavRoute("favorite")
+    data object Create : NavRoute("create")
+    data object Capture : NavRoute("capture")
 }

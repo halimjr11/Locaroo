@@ -4,6 +4,8 @@ import com.halimjr11.locaroo.data.mapper.LocalDataMapper
 import com.halimjr11.locaroo.data.mapper.RemoteDataMapper
 import com.halimjr11.locaroo.data.mapper.impl.LocalDataMapperImpl
 import com.halimjr11.locaroo.data.mapper.impl.RemoteDataMapperImpl
+import com.halimjr11.locaroo.ui.mapper.UiDataMapper
+import com.halimjr11.locaroo.ui.mapper.impl.UiDataMapperImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -27,4 +29,12 @@ abstract class MapperModule {
      */
     @Binds
     abstract fun provideRemoteDataMapper(impl: RemoteDataMapperImpl): RemoteDataMapper
+
+    /**
+     * Provides the [UiDataMapper] that is responsible for mapping ui data models to domain models.
+     * @param impl the implementation of [UiDataMapper] to provide.
+     * @return an instance of [UiDataMapper] that is responsible for mapping ui data models to domain models.
+     */
+    @Binds
+    abstract fun provideUiDataMapper(impl: UiDataMapperImpl): UiDataMapper
 }

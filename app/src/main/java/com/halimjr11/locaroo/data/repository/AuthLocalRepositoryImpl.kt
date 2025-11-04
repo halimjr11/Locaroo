@@ -3,17 +3,16 @@ package com.halimjr11.locaroo.data.repository
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import com.google.gson.Gson
 import com.halimjr11.locaroo.data.remote.model.UserResponse
 import com.halimjr11.locaroo.data.utils.AuthPrefKeys
 import com.halimjr11.locaroo.domain.repository.AuthLocalRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class AuthLocalRepositoryImpl(
-    private val dataStore: DataStore<Preferences>,
-    private val gson: Gson = Gson()
+class AuthLocalRepositoryImpl @Inject constructor(
+    private val dataStore: DataStore<Preferences>
 ) : AuthLocalRepository {
     override suspend fun saveAccessToken(token: String) {
         dataStore.edit { prefs ->

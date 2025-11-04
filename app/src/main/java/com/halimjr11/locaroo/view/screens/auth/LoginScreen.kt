@@ -48,29 +48,31 @@ fun LoginScreen(
     val context = LocalContext.current
     val state by viewModel.loginState.collectAsState()
 
-    when (state) {
-        is UiState.Error -> Toast.makeText(
-            context,
-            (state as UiState.Error).message,
-            Toast.LENGTH_SHORT
-        ).show()
+    Box(modifier = modifier.fillMaxSize()) {
+        LoginScreenContent(
+            modifier = modifier,
+            onSignIn = { email, password ->
+                viewModel.login(email, password)
+            },
+            onNavigateToRegister = onNavigateToRegister
+        )
 
-        is UiState.Loading -> {
-            CircularProgressIndicator()
-        }
+        when (state) {
+            is UiState.Error -> Toast.makeText(
+                context,
+                (state as UiState.Error).message,
+                Toast.LENGTH_SHORT
+            ).show()
 
-        is UiState.Success -> {
-            onNavigateToHome()
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is UiState.Success -> {
+                onNavigateToHome()
+            }
         }
     }
-
-    LoginScreenContent(
-        modifier = modifier,
-        onSignIn = { email, password ->
-            viewModel.login(email, password)
-        },
-        onNavigateToRegister = onNavigateToRegister
-    )
 }
 
 @Composable

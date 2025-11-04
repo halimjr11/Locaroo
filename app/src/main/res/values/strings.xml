@@ -11,4 +11,5 @@
     <string name="view_all_text">View all</string>
     <string name="favorite">Favorite</string>
     <string name="back">Back</string>
+    <string name="error_title">Something Went Wrong</string>
 </resources>

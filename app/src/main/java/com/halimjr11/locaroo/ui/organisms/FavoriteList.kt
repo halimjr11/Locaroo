@@ -4,34 +4,34 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.halimjr11.locaroo.ui.model.PlaceUi
-import com.halimjr11.locaroo.ui.molecules.DestinationCard
+import com.halimjr11.locaroo.ui.molecules.FavoriteCard
 
 @Composable
-fun DestinationCarousel(
+fun FavoriteCarousel(
     modifier: Modifier = Modifier,
     items: List<PlaceUi>,
     onCardClick: (PlaceUi) -> Unit = {}
 ) {
-    LazyRow(
+    LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, start = 8.dp),
+            .padding(all = 8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(items, key = { it.id }) { dest ->
-            DestinationCard(
-                imageUrl = dest.imageUrl,
-                name = dest.name,
-                location = dest.location,
-                rating = dest.rating,
-                onCardClick = { onCardClick(dest) }
+        items(items, key = { it.id }) { place ->
+            FavoriteCard(
+                imageUrl = place.imageUrl,
+                name = place.name,
+                location = place.location,
+                rating = place.rating,
+                onCardClick = { onCardClick(place) }
             )
         }
     }

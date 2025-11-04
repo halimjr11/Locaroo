@@ -1,6 +1,7 @@
 package com.halimjr11.locaroo.view.screens.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,35 +48,41 @@ fun SearchScreen(
     val query by viewModel.query.collectAsStateWithLifecycle()
     val state by viewModel.searchResults.collectAsStateWithLifecycle()
 
-    when (state) {
-        is UiState.Success -> {
-            val data = (state as UiState.Success<List<PlaceUi>>).data
-            if (data.isNotEmpty()) {
-                SearchScreenContent(
-                    modifier = modifier,
-                    items = data,
-                    query = query,
-                    onValueChange = { viewModel.updateQuery(it) },
-                    onBack = onBack,
-                    onCardClick = onPlaceClick,
-                )
-            } else {
+    Box(modifier = modifier.fillMaxSize()) {
+        when (state) {
+            is UiState.Success -> {
+                val data = (state as UiState.Success<List<PlaceUi>>).data
+                if (data.isNotEmpty()) {
+                    SearchScreenContent(
+                        modifier = modifier,
+                        items = data,
+                        query = query,
+                        onValueChange = { viewModel.updateQuery(it) },
+                        onBack = onBack,
+                        onCardClick = onPlaceClick,
+                    )
+                } else {
+                    ErrorState(
+                        modifier = modifier.align(Alignment.Center),
+                        title = stringResource(R.string.empty_title),
+                        message = stringResource(R.string.empty_messages, query),
+                        onRetry = { viewModel.updateQuery(query) }
+                    )
+                }
+            }
+
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is UiState.Error -> {
                 ErrorState(
-                    title = stringResource(R.string.empty_title),
-                    message = stringResource(R.string.empty_messages, query)
+                    modifier = modifier.align(Alignment.Center),
+                    title = stringResource(R.string.error_message),
+                    message = (state as UiState.Error).message,
+                    onRetry = { viewModel.updateQuery(query) }
                 )
             }
-        }
-
-        is UiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is UiState.Error -> {
-            ErrorState(
-                title = stringResource(R.string.error_message),
-                message = (state as UiState.Error).message
-            )
         }
     }
 }

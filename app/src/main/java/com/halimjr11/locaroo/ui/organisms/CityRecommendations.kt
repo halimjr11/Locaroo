@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.halimjr11.locaroo.R
@@ -40,9 +38,8 @@ fun CityRecommendations(
             )
         }
         items(filtered, key = { it.id }) { dest ->
-            val painter = ColorPainter(MaterialTheme.colorScheme.secondaryContainer)
             DestinationCard(
-                imagePainter = painter,
+                imageUrl = dest.imageUrl,
                 name = dest.name,
                 location = dest.location,
                 rating = dest.rating,

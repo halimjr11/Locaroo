@@ -1,15 +1,23 @@
 package com.halimjr11.locaroo.view.screens.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,22 +37,44 @@ import com.halimjr11.locaroo.utils.SampleData
 import com.halimjr11.locaroo.view.viewmodels.home.HomeViewModel
 
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, onCardClick: (PlaceUi) -> Unit) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    onCardClick: (PlaceUi) -> Unit,
+    onAddPlace: () -> Unit,
+) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val state by viewModel.places.collectAsStateWithLifecycle()
 
-    when (state) {
-        is UiState.Success -> {
-            val (places, title) = (state as UiState.Success<Pair<List<PlaceUi>, String>>).data
-            HomeScreenContent(modifier, title, onCardClick, places)
+    Box(modifier = modifier.fillMaxSize()) {
+        when (state) {
+            is UiState.Success -> {
+                val (places, title) = (state as UiState.Success<Pair<List<PlaceUi>, String>>).data
+                HomeScreenContent(modifier, title, onCardClick, places)
+            }
+
+            is UiState.Loading -> {
+                CircularProgressIndicator(
+                    modifier = modifier.align(Alignment.Center)
+                )
+            }
+
+            is UiState.Error -> {
+                ErrorState(
+                    modifier = modifier.align(Alignment.Center),
+                    title = stringResource(R.string.error_title),
+                    message = (state as UiState.Error).message,
+                    onRetry = { viewModel.loadPlaces() }
+                )
+            }
         }
 
-        is UiState.Loading -> {
-            CircularProgressIndicator()
-        }
-
-        is UiState.Error -> {
-            ErrorState(message = (state as UiState.Error).message)
+        FloatingActionButton(
+            onClick = onAddPlace,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(imageVector = Icons.Filled.Add, contentDescription = "Add place")
         }
     }
 }
@@ -60,7 +90,9 @@ private fun HomeScreenContent(
     val (selectedCity, _) = remember { mutableStateOf(cities.firstOrNull()) }
 
     Column(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.surface)
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.surface)
     ) {
         HomeHeader(userName = title, onNotifClick = {})
         CityRecommendations(
@@ -80,7 +112,7 @@ private fun HomeScreenContent(
 @Composable
 fun HomeScreenPreview() {
     LocarooTheme(darkTheme = false, dynamicColor = false) {
-        HomeScreenContent(places = SampleData.destinations, title = "Leonardo",onCardClick = {})
+        HomeScreenContent(places = SampleData.destinations, title = "Leonardo", onCardClick = {})
     }
 }
 
@@ -88,8 +120,9 @@ fun HomeScreenPreview() {
 @Composable
 fun HomeScreenPreviewDark() {
     LocarooTheme(darkTheme = true, dynamicColor = false) {
-        HomeScreenContent(places = SampleData.destinations, title = "Leonardo",onCardClick = {})
+        HomeScreenContent(places = SampleData.destinations, title = "Leonardo", onCardClick = {})
     }
 }
+
 
 

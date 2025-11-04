@@ -31,6 +31,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     LaunchedEffect(Unit) {
                         viewModel.authEvents.collect { event ->
+                            println("Jalanan ==> data $event")
                             if (event is AuthEvent.Unauthorized) {
                                 navController.navigate(NavRoute.Login.route)
                             }

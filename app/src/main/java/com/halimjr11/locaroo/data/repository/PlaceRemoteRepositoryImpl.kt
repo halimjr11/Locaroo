@@ -2,9 +2,9 @@ package com.halimjr11.locaroo.data.repository
 
 import com.halimjr11.locaroo.data.mapper.RemoteDataMapper
 import com.halimjr11.locaroo.data.remote.LocalGemApi
-import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
+import com.halimjr11.locaroo.domain.utils.DomainResult
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -26,7 +26,6 @@ class PlaceRemoteRepositoryImpl @Inject constructor(
 
     override suspend fun getPlaceById(id: Long): DomainResult<PlaceDomain> {
         return safeApiCall {
-            val response = api.getPlace(id)
             api.getPlace(id).data?.let { mapper.mapPlaceToDomain(it) } ?: PlaceDomain()
         }
     }

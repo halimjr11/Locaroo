@@ -6,8 +6,9 @@ import com.halimjr11.locaroo.data.local.model.ScheduleEntity
 import com.halimjr11.locaroo.data.mapper.LocalDataMapper
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.model.ScheduleDomain
+import javax.inject.Inject
 
-class LocalDataMapperImpl : LocalDataMapper {
+class LocalDataMapperImpl @Inject constructor() : LocalDataMapper {
     override suspend fun mapScheduleToDomain(scheduleEntity: ScheduleEntity): ScheduleDomain {
         return ScheduleDomain(
             id = scheduleEntity.id.orLongZero(),
