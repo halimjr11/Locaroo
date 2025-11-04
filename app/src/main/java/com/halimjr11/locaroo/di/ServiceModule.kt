@@ -9,6 +9,7 @@ import com.halimjr11.locaroo.common.AuthEventManager
 import com.halimjr11.locaroo.data.remote.LocalGemApi
 import com.halimjr11.locaroo.data.remote.interceptor.AuthInterceptor
 import com.halimjr11.locaroo.data.remote.interceptor.SessionInterceptor
+import com.halimjr11.locaroo.data.remote.interceptor.TokenInterceptor
 import com.halimjr11.locaroo.domain.repository.AuthLocalRepository
 import com.halimjr11.locaroo.utils.Constant
 import dagger.Module
@@ -16,6 +17,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -70,6 +72,23 @@ class ServiceModule {
     }
 
     /**
+     * Provides an instance of [Authenticator] which is used to authenticate HTTP requests.
+     *
+     * @param chuckerInterceptor The Chucker interceptor instance to use for caching responses.
+     * @param dataStore The data store instance to use for accessing the token.
+     * @return An instance of [Authenticator].
+     */
+    @Singleton
+    @Provides
+    @Named(Constant.TOKEN)
+    fun provideTokenInterceptor(
+        chuckerInterceptor: ChuckerInterceptor,
+        dataStore: DataStore<Preferences>
+    ): Authenticator {
+        return TokenInterceptor(dataStore, chuckerInterceptor)
+    }
+
+    /**
      * Provides an instance of {@link AuthInterceptor} which is used to intercept and handle HTTP requests to the API.
      * The interceptor is configured with:
      * - The {@link DataStore<Preferences>} to access the local storage of the user data.
@@ -121,6 +140,7 @@ class ServiceModule {
     fun provideOkHttpClient(
         @Named(Constant.AUTH) authInterceptor: Interceptor,
         @Named(Constant.SESSION) sessionInterceptor: Interceptor,
+        @Named(Constant.TOKEN) tokenInterceptor: Authenticator,
         logging: HttpLoggingInterceptor,
         chucker: ChuckerInterceptor
     ): OkHttpClient {
@@ -129,6 +149,7 @@ class ServiceModule {
             .addInterceptor(interceptor = chucker)
             .addInterceptor(interceptor = authInterceptor)
             .addInterceptor(interceptor = sessionInterceptor)
+            .authenticator(tokenInterceptor)
             .connectTimeout(120, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .build()

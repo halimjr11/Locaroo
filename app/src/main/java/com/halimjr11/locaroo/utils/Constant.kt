@@ -12,4 +12,5 @@ object Constant {
     const val SCHEDULE_NAME = "schedule"
     const val AUTH = "AUTH"
     const val SESSION = "SESSION"
+    const val TOKEN = "TOKEN"
 }
