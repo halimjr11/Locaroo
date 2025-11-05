@@ -3,47 +3,68 @@ package com.halimjr11.locaroo.view.screens.create
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationManager
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
-import com.halimjr11.locaroo.ui.navigation.NavRoute
+import com.halimjr11.locaroo.ui.theme.LocarooTheme
+import com.halimjr11.locaroo.utils.location.ensureLocationPermission
+import com.halimjr11.locaroo.utils.location.fetchLastKnownLocation
+import com.halimjr11.locaroo.utils.location.hasLocationPermission
 import com.halimjr11.locaroo.view.viewmodels.create.CreateViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.util.Locale
 
 @Composable
 fun CreateScreen(
@@ -56,12 +77,14 @@ fun CreateScreen(
     var name by rememberSaveable { mutableStateOf("") }
     var description by rememberSaveable { mutableStateOf("") }
     var location by rememberSaveable { mutableStateOf("") }
-    var latitude by rememberSaveable { mutableStateOf("") }
-    var longitude by rememberSaveable { mutableStateOf("") }
+    var latitude by rememberSaveable { mutableDoubleStateOf(0.0) }
+    var longitude by rememberSaveable { mutableDoubleStateOf(0.0) }
     var tags by rememberSaveable { mutableStateOf("") }
 
     var imagePath by rememberSaveable { mutableStateOf<String?>(null) }
     var locationStatus by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val tempUriState = remember { mutableStateOf<Uri?>(null) }
 
     // Handle image selected from CaptureScreen via SavedStateHandle
     LaunchedEffect(Unit) {
@@ -90,16 +113,39 @@ fun CreateScreen(
         }
     )
 
+    val takePictureLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success: Boolean ->
+            if (success) {
+                tempUriState.value?.let { uri ->
+                    val path = uriToAbsolutePath(context, uri)
+                    imagePath = path
+                }
+            }
+        }
+    )
+
+    val permissionCameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            if (granted) {
+                val uri = createTempImageUri(context)
+                tempUriState.value = uri
+                takePictureLauncher.launch(uri)
+            }
+        }
+    )
+
     val requestLocationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
         onResult = { results ->
             val granted = results[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                     results[Manifest.permission.ACCESS_COARSE_LOCATION] == true
             if (granted) {
-                fetchLastKnownLocation(context) { loc, address ->
+                fetchLastKnownLocation(context) { loc, address, city ->
                     if (loc != null) {
-                        latitude = loc.latitude.toString()
-                        longitude = loc.longitude.toString()
+                        latitude = loc.latitude
+                        longitude = loc.longitude
                         if (!address.isNullOrBlank()) location = address
                         locationStatus = "Location updated"
                     } else {
@@ -112,111 +158,261 @@ fun CreateScreen(
         }
     )
 
-    // Ask for read permission on enter for picker use-case
-    LaunchedEffect(Unit) {
-        ensureMediaPermission(context) { permissions ->
-            requestMediaPermissionLauncher.launch(permissions)
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") })
-        OutlinedTextField(
-            value = description,
-            onValueChange = { description = it },
-            label = { Text("Description") })
-        OutlinedTextField(
-            value = location,
-            onValueChange = { location = it },
-            label = { Text("Location") })
-        OutlinedTextField(
-            value = latitude,
-            onValueChange = { latitude = it },
-            label = { Text("Latitude") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-        )
-        OutlinedTextField(
-            value = longitude,
-            onValueChange = { longitude = it },
-            label = { Text("Longitude") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-        )
-        OutlinedTextField(
-            value = tags,
-            onValueChange = { tags = it },
-            label = { Text("Tags (comma separated)") })
-
-        Button(onClick = {
-            if (hasLocationPermission(context)) {
-                fetchLastKnownLocation(context) { loc, address ->
-                    if (loc != null) {
-                        latitude = loc.latitude.toString()
-                        longitude = loc.longitude.toString()
-                        if (!address.isNullOrBlank()) location = address
-                        locationStatus = "Location updated"
-                    } else {
-                        locationStatus = "Unable to get location"
-                    }
-                }
-            } else {
-                ensureLocationPermission(context) { perms ->
-                    requestLocationPermissionLauncher.launch(perms)
-                }
-            }
-        }) { Text("Use Current Location") }
-
-        locationStatus?.let { Text(it) }
-
-        if (imagePath != null) {
-            Image(
-                painter = rememberAsyncImagePainter(imagePath),
-                contentDescription = null,
-                modifier = Modifier.height(180.dp),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            Text("No image selected")
-        }
-
-        Button(onClick = {
-            ensureMediaPermission(context) { permissions ->
-                requestMediaPermissionLauncher.launch(permissions)
-            }
-        }) { Text("Pick Image") }
-
-        Button(onClick = { navController.navigate(NavRoute.Capture.route) }) {
-            Text("Capture Image")
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Button(onClick = {
-            val lat = latitude.toDoubleOrNull() ?: 0.0
-            val lon = longitude.toDoubleOrNull() ?: 0.0
+    CreateScreenContent(
+        padding = padding,
+        context = context,
+        name = name,
+        onNameChange = {
+            name = it
+        },
+        description = description,
+        onDescriptionChange = {
+            description = it
+        },
+        location = location,
+        onLocationChange = {
+            location = it
+        },
+        onBack = { navController.popBackStack() },
+        locationStatus = locationStatus,
+        tags = tags,
+        onTagsChange = {
+            tags = it
+        },
+        imagePath = imagePath,
+        onPermissionLocationRequest = {
+            requestLocationPermissionLauncher.launch(it)
+        },
+        onPermissionMediaRequest = {
+            requestMediaPermissionLauncher.launch(it)
+        },
+        onPickImage = {
+            pickImageLauncher.launch("image/*")
+        },
+        onCaptureImage = {
+            val uri = createTempImageUri(context)
+            tempUriState.value = uri
+            takePictureLauncher.launch(uri)
+        },
+        onPermissionCameraRequest = {
+            permissionCameraLauncher.launch(Manifest.permission.CAMERA)
+        },
+        onSubmit = {
             val tagsList = tags.split(',').map { it.trim() }.filter { it.isNotEmpty() }
             val img = imagePath ?: ""
             viewModel.createPlace(
                 name = name,
                 description = description,
-                latitude = lat,
-                longitude = lon,
+                latitude = latitude,
+                longitude = longitude,
                 location = location,
                 tagsSlugs = tagsList,
                 imageAbsolutePath = img
             )
-        }) { Text("Submit") }
+        },
+        statusText = viewModel.statusText
+    )
 
-        viewModel.statusText?.let { Text(it) }
-    }
+
 }
 
-private fun ensureMediaPermission(context: Context, onNeedRequest: (Array<String>) -> Unit) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateScreenContent(
+    padding: PaddingValues,
+    context: Context,
+    name: String,
+    onNameChange: (String) -> Unit,
+    description: String,
+    onDescriptionChange: (String) -> Unit,
+    location: String,
+    onLocationChange: (String) -> Unit,
+    onBack: () -> Unit,
+    locationStatus: String?,
+    tags: String,
+    onTagsChange: (String) -> Unit,
+    imagePath: String?,
+    onPermissionLocationRequest: (Array<String>) -> Unit,
+    onPermissionMediaRequest: (Array<String>) -> Unit,
+    onPermissionCameraRequest: () -> Unit,
+    onPickImage: () -> Unit,
+    onCaptureImage: () -> Unit,
+    onSubmit: () -> Unit,
+    statusText: String?
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Top bar
+        CenterAlignedTopAppBar(
+            modifier = Modifier.background(MaterialTheme.colorScheme.primary),
+            windowInsets = WindowInsets(0),
+            title = { Text(text = "Create Place") },
+            navigationIcon = {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null
+                    )
+                }
+            }
+        )
+
+        // Content
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = onNameChange,
+                label = { Text("Name") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = {
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                },
+                supportingText = { Text("Give your place a clear name") }
+            )
+
+            OutlinedTextField(
+                value = description,
+                onValueChange = onDescriptionChange,
+                label = { Text("Description") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent
+                ),
+                supportingText = { Text("Tell people what makes this place special") }
+            )
+
+            OutlinedTextField(
+                value = location,
+                onValueChange = onLocationChange,
+                label = { Text("Location") },
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    IconButton(onClick = {
+                        if (hasLocationPermission(context)) {
+                            fetchLastKnownLocation(context) { loc, address, city ->
+                                onLocationChange(address.orEmpty())
+                            }
+                        } else {
+                            ensureLocationPermission(context) { perms ->
+                                onPermissionLocationRequest(perms)
+                            }
+                        }
+                    }) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null)
+                    }
+                },
+                supportingText = { locationStatus?.let { Text(it) } }
+            )
+
+            OutlinedTextField(
+                value = tags,
+                onValueChange = onTagsChange,
+                label = { Text("Tags (comma separated)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Image preview card
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(12.dp)
+                ) {
+                    if (imagePath != null) {
+                        Image(
+                            painter = rememberAsyncImagePainter(imagePath),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                "No image selected",
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Image actions
+            Button(
+                onClick = {
+                    ensureMediaPermission(context) { isNeedRequest, permissions ->
+                        if (isNeedRequest) {
+                            onPermissionMediaRequest(permissions)
+                        } else {
+                            onPickImage()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Image, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Pick Image")
+            }
+
+            Button(
+                onClick = {
+                    ensureCameraPermission(context) { granted ->
+                        if (granted) {
+                            onCaptureImage()
+                        } else {
+                            onPermissionCameraRequest()
+                        }
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.AddAPhoto, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Capture Image")
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Button(
+                onClick = onSubmit,
+                modifier = Modifier.fillMaxWidth()
+            ) { Text("Submit") }
+
+            Text(statusText.orEmpty())
+        }
+    }
+
+}
+
+private fun ensureMediaPermission(
+    context: Context,
+    onNeedRequest: (Boolean, Array<String>) -> Unit
+) {
     val perms = if (android.os.Build.VERSION.SDK_INT >= 33) {
         arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
     } else {
@@ -228,84 +424,7 @@ private fun ensureMediaPermission(context: Context, onNeedRequest: (Array<String
             it
         ) != PackageManager.PERMISSION_GRANTED
     }
-    if (need) onNeedRequest(perms)
-}
-
-private fun ensureLocationPermission(context: Context, onNeedRequest: (Array<String>) -> Unit) {
-    val perms = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-    val need = perms.any {
-        ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
-    }
-    if (need) onNeedRequest(perms)
-}
-
-private fun hasLocationPermission(context: Context): Boolean {
-    val fine = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    val coarse = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    return fine || coarse
-}
-
-private fun fetchLastKnownLocation(
-    context: Context,
-    onResult: (Location?, String?) -> Unit
-) {
-    val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    val hasFine = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    val hasCoarse = ContextCompat.checkSelfPermission(
-        context,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    ) == PackageManager.PERMISSION_GRANTED
-    if (!hasFine && !hasCoarse) {
-        onResult(null, null)
-        return
-    }
-
-    val providers = listOf(
-        LocationManager.GPS_PROVIDER,
-        LocationManager.NETWORK_PROVIDER,
-        LocationManager.PASSIVE_PROVIDER
-    )
-    var best: Location? = null
-    for (p in providers) {
-        try {
-            val loc = lm.getLastKnownLocation(p)
-            if (loc != null && (best == null || loc.accuracy < best!!.accuracy)) {
-                best = loc
-            }
-        } catch (_: SecurityException) {
-        }
-    }
-
-    if (best != null) {
-        // Try reverse geocoding best-effort
-        val address = try {
-            val geocoder = Geocoder(context, Locale.getDefault())
-            val results = geocoder.getFromLocation(best.latitude, best.longitude, 1)
-            results?.firstOrNull()?.let { adr ->
-                listOfNotNull(adr.locality, adr.adminArea, adr.countryName)
-                    .filter { it.isNotBlank() }
-                    .joinToString(", ")
-                    .ifBlank { adr.getAddressLine(0).orEmpty() }
-            }
-        } catch (_: Exception) {
-            null
-        }
-        onResult(best, address)
-    } else {
-        onResult(null, null)
-    }
+    onNeedRequest(need, perms)
 }
 
 private fun copyUriToCache(context: Context, uri: Uri): String? {
@@ -324,3 +443,97 @@ private fun copyUriToCache(context: Context, uri: Uri): String? {
     }
 }
 
+
+private fun ensureCameraPermission(context: Context, onNeedRequest: (Boolean) -> Unit) {
+    val granted = ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.CAMERA
+    ) == PackageManager.PERMISSION_GRANTED
+    onNeedRequest(granted)
+}
+
+private fun createTempImageUri(context: Context): Uri {
+    val imagesDir = File(context.cacheDir, "images").apply { mkdirs() }
+    val file = File(imagesDir, "capture_${System.currentTimeMillis()}.jpg")
+    return FileProvider.getUriForFile(
+        context,
+        context.packageName + ".provider",
+        file
+    )
+}
+
+private fun uriToAbsolutePath(context: Context, uri: Uri): String? {
+    // Since we created the file ourselves in cacheDir, we can resolve back to path via lastPathSegment
+    // But FileProvider returns a content uri that still references our file; we can derive the same file path
+    return try {
+        val segments = uri.pathSegments
+        // The path after /cache_path/ is our relative path under cacheDir
+        val index = segments.indexOf("cache_path")
+        if (index >= 0 && index + 1 < segments.size) {
+            val relative = segments.drop(index + 1).joinToString(File.separator)
+            File(context.cacheDir, relative).absolutePath
+        } else null
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCreateLight() {
+    LocarooTheme(darkTheme = false, dynamicColor = false) {
+        CreateScreenContent(
+            padding = PaddingValues(16.dp),
+            context = LocalContext.current,
+            name = "",
+            onNameChange = {},
+            description = "",
+            onDescriptionChange = {},
+            location = "",
+            onLocationChange = {},
+            locationStatus = null,
+            tags = "",
+            onTagsChange = {},
+            imagePath = null,
+            onPermissionLocationRequest = {},
+            onPermissionMediaRequest = {},
+            onPickImage = {},
+            onCaptureImage = {},
+            onSubmit = {},
+            onBack = {},
+            onPermissionCameraRequest = {},
+            statusText = null
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewCreateDark() {
+    LocarooTheme(darkTheme = true, dynamicColor = false) {
+        CreateScreenContent(
+            padding = PaddingValues(16.dp),
+            context = LocalContext.current,
+            name = "",
+            onNameChange = {},
+            description = "",
+            onDescriptionChange = {},
+            location = "",
+            onLocationChange = {},
+            locationStatus = null,
+            tags = "",
+            onTagsChange = {},
+            imagePath = null,
+            onPermissionLocationRequest = {},
+            onPermissionMediaRequest = {},
+            onPickImage = {},
+            onCaptureImage = {},
+            onSubmit = {},
+            onBack = {},
+            onPermissionCameraRequest = {},
+            statusText = null
+        )
+    }
+}

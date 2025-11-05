@@ -18,9 +18,9 @@ class PlaceRemoteRepositoryImpl @Inject constructor(
     private val mapper: RemoteDataMapper
 ) : PlaceRemoteRepository, BaseRepository() {
 
-    override suspend fun getPlaces(page: Int, pageSize: Int): DomainResult<List<PlaceDomain>> {
+    override suspend fun getPlaces(city: String?): DomainResult<List<PlaceDomain>> {
         return safeApiCall {
-            api.getPlaces().data?.map { mapper.mapPlaceToDomain(it) } ?: emptyList()
+            api.getPlaces(city = city).data?.map { mapper.mapPlaceToDomain(it) }.orEmpty()
         }
     }
 

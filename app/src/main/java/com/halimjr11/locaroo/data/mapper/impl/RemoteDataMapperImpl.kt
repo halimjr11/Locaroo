@@ -13,7 +13,7 @@ import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.model.ReviewDomain
 import javax.inject.Inject
 
-class RemoteDataMapperImpl @Inject constructor(): RemoteDataMapper {
+class RemoteDataMapperImpl @Inject constructor() : RemoteDataMapper {
     override suspend fun mapAuthToDomain(loginData: AuthDataResponse): AuthDataDomain {
         return AuthDataDomain(
             accessToken = loginData.accessToken.orEmpty(),

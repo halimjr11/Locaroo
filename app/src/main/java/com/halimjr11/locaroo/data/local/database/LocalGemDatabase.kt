@@ -1,5 +1,6 @@
 package com.halimjr11.locaroo.data.local.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.halimjr11.locaroo.data.local.model.FavoriteEntity
@@ -8,7 +9,7 @@ import com.halimjr11.locaroo.data.local.model.ScheduleEntity
 @Database(
     entities = [ScheduleEntity::class, FavoriteEntity::class],
     version = 1,
-    exportSchema = false,
+    exportSchema = true,
     autoMigrations = []
 )
 abstract class LocalGemDatabase : RoomDatabase() {

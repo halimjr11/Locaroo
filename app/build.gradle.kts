@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.room)
 }
 
 android {
@@ -30,6 +31,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

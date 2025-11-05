@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -58,6 +59,8 @@ fun FavoriteScreen(
                 title = stringResource(R.string.empty_title),
                 message = (state as UiState.Error).message
             )
+
+            else -> Unit
         }
     }
 }
@@ -74,12 +77,15 @@ fun FavoriteScreenContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
     ) {
-        CenterAlignedTopAppBar(title = {
-            Text(
-                text = "Favorites",
-                style = MaterialTheme.typography.titleMedium
-            )
-        })
+        CenterAlignedTopAppBar(
+            modifier = modifier.background(MaterialTheme.colorScheme.primary),
+            windowInsets = WindowInsets(0),
+            title = {
+                Text(
+                    text = "Favorites",
+                    style = MaterialTheme.typography.titleMedium
+                )
+            })
         Spacer(Modifier.height(16.dp))
         FavoriteCarousel(items = items, onCardClick = onCardClick)
     }

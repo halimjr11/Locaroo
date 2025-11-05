@@ -15,6 +15,8 @@ data class FavoriteEntity(
     val name: String? = null,
     @ColumnInfo("location")
     val location: String? = null,
+    @ColumnInfo("rating")
+    val rating: Double? = null,
     @SerializedName("image_url")
     val imageUrl: String? = null
 )

@@ -83,6 +83,8 @@ fun SearchScreen(
                     onRetry = { viewModel.updateQuery(query) }
                 )
             }
+
+            else -> Unit
         }
     }
 }
@@ -103,12 +105,13 @@ private fun SearchScreenContent(
             .background(MaterialTheme.colorScheme.surface)
     ) {
         CenterAlignedTopAppBar(
+            modifier = modifier.background(MaterialTheme.colorScheme.primary),
             title = { Text(text = "Search", style = MaterialTheme.typography.titleMedium) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
+                        contentDescription = stringResource(R.string.back)
                     )
                 }
             }

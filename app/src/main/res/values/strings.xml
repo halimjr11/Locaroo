@@ -12,4 +12,6 @@
     <string name="favorite">Favorite</string>
     <string name="back">Back</string>
     <string name="error_title">Something Went Wrong</string>
+    <string name="about_icon_desc">about_page</string>
+    <string name="view_all_destination_title">View All Destination</string>
 </resources>

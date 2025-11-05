@@ -2,6 +2,7 @@ package com.halimjr11.locaroo.data.repository
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import com.halimjr11.locaroo.data.mapper.RemoteDataMapper
 import com.halimjr11.locaroo.data.remote.LocalGemApi
 import com.halimjr11.locaroo.data.remote.model.request.LoginRequest
@@ -9,8 +10,8 @@ import com.halimjr11.locaroo.data.remote.model.request.RegisterRequest
 import com.halimjr11.locaroo.data.utils.AuthPrefKeys
 import com.halimjr11.locaroo.domain.model.AuthDataDomain
 import com.halimjr11.locaroo.domain.model.AuthUserDomain
-import com.halimjr11.locaroo.domain.utils.DomainResult
 import com.halimjr11.locaroo.domain.repository.AuthRemoteRepository
+import com.halimjr11.locaroo.domain.utils.DomainResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -31,6 +32,12 @@ class AuthRemoteRepositoryImpl @Inject constructor(
                 )
             )
             response.data?.let {
+                dataStore.edit { preferences ->
+                    preferences[AuthPrefKeys.USER_NAME_JSON] = it.user?.name.orEmpty()
+                    preferences[AuthPrefKeys.USER_EMAIL_JSON] = it.user?.email.orEmpty()
+                    preferences[AuthPrefKeys.ACCESS_TOKEN] = it.accessToken.orEmpty()
+                    preferences[AuthPrefKeys.REFRESH_TOKEN] = it.refreshToken.orEmpty()
+                }
                 authMapper.mapAuthToDomain(it)
             } ?: AuthDataDomain()
         }
@@ -49,7 +56,9 @@ class AuthRemoteRepositoryImpl @Inject constructor(
                     password = password
                 )
             )
-            response.data?.let { authMapper.mapAuthToDomain(it) } ?: AuthDataDomain()
+            response.data?.let {
+                authMapper.mapAuthToDomain(it)
+            } ?: AuthDataDomain()
         }
     }
 

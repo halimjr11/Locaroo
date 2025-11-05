@@ -2,28 +2,32 @@ package com.halimjr11.locaroo.ui.molecules
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.halimjr11.locaroo.R
 import com.halimjr11.locaroo.ui.atoms.AppAvatar
 import com.halimjr11.locaroo.ui.atoms.AppIconButton
 import com.halimjr11.locaroo.ui.atoms.IconButtonVariant
-import com.halimjr11.locaroo.ui.atoms.NotificationBadge
 
 @Composable
 fun TopBarProfile(
     name: String,
     avatarPainter: Painter? = null,
-    notifIcon: Painter? = null,
-    notifCount: Int = 0,
-    onNotifClick: () -> Unit = {}
+    aboutIcon: Painter? = null,
+    favoriteIcon: Painter? = null,
+    onAboutClick: () -> Unit = {},
+    onFavoriteClick: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -42,18 +46,28 @@ fun TopBarProfile(
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(8.dp, 0.dp, 0.dp, 0.dp)
             )
+
         }
 
-        if (notifIcon != null) {
-            androidx.compose.foundation.layout.Box {
+        Row(horizontalArrangement = Arrangement.End) {
+            if (aboutIcon != null) {
                 AppIconButton(
-                    painter = notifIcon,
-                    contentDescription = "Notifications",
+                    painter = aboutIcon,
+                    contentDescription = stringResource(R.string.about_icon_desc),
                     size = 40.dp,
                     variant = IconButtonVariant.Tinted,
-                    onClick = onNotifClick
+                    onClick = onAboutClick
                 )
-                NotificationBadge(count = notifCount, modifier = Modifier.align(Alignment.TopEnd))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            if (favoriteIcon != null) {
+                AppIconButton(
+                    painter = favoriteIcon,
+                    contentDescription = stringResource(R.string.favorite),
+                    size = 40.dp,
+                    variant = IconButtonVariant.Tinted,
+                    onClick = onFavoriteClick
+                )
             }
         }
     }

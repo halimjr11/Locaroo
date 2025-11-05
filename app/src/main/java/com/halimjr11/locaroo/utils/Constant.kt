@@ -13,4 +13,6 @@ object Constant {
     const val AUTH = "AUTH"
     const val SESSION = "SESSION"
     const val TOKEN = "TOKEN"
+    const val HOME_LIMIT = 5
+    const val BEST_DESTINATION = "Best destination"
 }

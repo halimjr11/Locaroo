@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.halimjr11.locaroo.common.coroutines.CoroutinesDispatcherProvider
-import com.halimjr11.locaroo.common.orLongZero
 import com.halimjr11.locaroo.domain.model.PlaceDomain
 import com.halimjr11.locaroo.domain.repository.PlaceLocalRepository
 import com.halimjr11.locaroo.domain.repository.PlaceRemoteRepository
@@ -28,7 +27,7 @@ class DetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val placeId: Long? = savedStateHandle.get<Long>("placeId")
+    private val placeId: String? = savedStateHandle.get<String>("placeId")
     private var placeDomain = PlaceDomain()
 
     private val _detailState = MutableStateFlow<UiState<PlaceUi>>(UiState.Loading)
@@ -38,7 +37,7 @@ class DetailViewModel @Inject constructor(
     val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
 
     init {
-        placeId?.let { loadPlace(it) }
+        placeId?.let { loadPlace(it.toLongOrNull() ?: 0) }
     }
 
     /**
@@ -63,12 +62,12 @@ class DetailViewModel @Inject constructor(
     }
 
     fun checkFavorite() = viewModelScope.launch(dispatcher.io) {
-        _isFavorite.value = placeLocalRepository.isFavorite(placeId.orLongZero())
+        _isFavorite.value = placeLocalRepository.isFavorite(placeId?.toLongOrNull() ?: 0)
     }
 
     fun toggleFavorite() = viewModelScope.launch() {
         if (_isFavorite.value) {
-            placeLocalRepository.deleteFavorite(placeId.orLongZero())
+            placeLocalRepository.deleteFavorite(placeId?.toLongOrNull() ?: 0)
         } else {
             placeLocalRepository.insertFavorite(placeDomain)
         }
@@ -79,6 +78,6 @@ class DetailViewModel @Inject constructor(
      * Retry loading the place with the given id.
      */
     fun retry() {
-        placeId?.let { loadPlace(it) }
+        placeId?.let { loadPlace(it.toLongOrNull() ?: 0) }
     }
 }

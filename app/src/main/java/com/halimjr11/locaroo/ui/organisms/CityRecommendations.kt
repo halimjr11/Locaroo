@@ -20,31 +20,27 @@ fun CityRecommendations(
     modifier: Modifier = Modifier,
     title: String = stringResource(R.string.recommended_title),
     places: List<PlaceUi>,
-    selectedCity: String? = null,
     onPlaceClick: (PlaceUi) -> Unit = {},
+    onViewAllClick: (String) -> Unit = {}
 ) {
-    SectionHeader(title = title, onActionClick = {})
-    LazyRow(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, start = 8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        val filtered = places.filter {
-            selectedCity == null || it.location.equals(
-                selectedCity,
-                ignoreCase = true
-            )
-        }
-        items(filtered, key = { it.id }) { dest ->
-            DestinationCard(
-                imageUrl = dest.imageUrl,
-                name = dest.name,
-                location = dest.location,
-                rating = dest.rating,
-                onCardClick = { onPlaceClick(dest) },
-            )
+    if (places.isNotEmpty()) {
+        SectionHeader(title = title, onActionClick = onViewAllClick)
+        LazyRow(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, start = 8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(places, key = { it.id }) { dest ->
+                DestinationCard(
+                    imageUrl = dest.imageUrl,
+                    name = dest.name,
+                    location = dest.location,
+                    rating = dest.rating,
+                    onCardClick = { onPlaceClick(dest) },
+                )
+            }
         }
     }
 }

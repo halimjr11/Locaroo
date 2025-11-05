@@ -22,13 +22,11 @@ class HomeViewModel @Inject constructor(
     private val uiDataMapper: UiDataMapper
 ) : ViewModel() {
 
-    private val _places = MutableStateFlow<UiState<Pair<List<PlaceUi>, String>>>(UiState.Loading)
-    val places: StateFlow<UiState<Pair<List<PlaceUi>, String>>> = _places.asStateFlow()
+    private val _places =
+        MutableStateFlow<UiState<Triple<List<PlaceUi>, List<PlaceUi>, String>>>(UiState.Loading)
+    val places: StateFlow<UiState<Triple<List<PlaceUi>, List<PlaceUi>, String>>> =
+        _places.asStateFlow()
 
-
-    init {
-        loadPlaces()
-    }
 
     /**
      * Load places data
@@ -39,14 +37,15 @@ class HomeViewModel @Inject constructor(
      * object. If the result is an error, it wraps the error message in a
      * [UiState.Error] object.
      */
-    fun loadPlaces() = viewModelScope.launch(dispatcher.io) {
-        val result = getHomeDataUseCase()
+    fun loadPlaces(city: String) = viewModelScope.launch(dispatcher.io) {
+        val result = getHomeDataUseCase(city)
         _places.value = when (result) {
             is DomainResult.Success -> {
                 UiState.Success(
-                    Pair(
+                    Triple(
                         result.data.first.map { uiDataMapper.mapPlaceToUI(it) },
-                        result.data.second
+                        result.data.second.map { uiDataMapper.mapPlaceToUI(it) },
+                        result.data.third
                     )
                 )
             }

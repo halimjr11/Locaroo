@@ -1,9 +1,9 @@
 package com.halimjr11.locaroo.view.screens.splash
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -24,7 +24,8 @@ import androidx.navigation.NavController
 import com.halimjr11.locaroo.R
 import com.halimjr11.locaroo.ui.navigation.NavRoute
 import com.halimjr11.locaroo.view.viewmodels.splash.SplashViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
@@ -33,23 +34,39 @@ fun SplashScreen(
 ) {
     val isLoggedIn by viewModel.isLoggedIn.collectAsState(initial = false)
 
-    val transition = rememberInfiniteTransition(label = "splash")
-    val scale by transition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
-        ),
-        label = "scale"
-    )
-    val alpha by transition.animateFloat(
-        initialValue = 0.6f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000, easing = FastOutSlowInEasing)
-        ),
-        label = "alpha"
-    )
+    // Finite, smooth entrance: scale-in with spring and fade-in with tween
+    val scaleAnim = androidx.compose.runtime.remember { Animatable(0.85f) }
+    val alphaAnim = androidx.compose.runtime.remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        // Run both animations in parallel and wait for completion
+        coroutineScope {
+            val scaleJob = launch {
+                scaleAnim.animateTo(
+                    targetValue = 1f,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                )
+            }
+            val alphaJob = launch {
+                alphaAnim.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
+                )
+            }
+            // Wait for both to finish
+            scaleJob.join(); alphaJob.join()
+        }
+
+        // Navigate after animation completes
+        val target = if (isLoggedIn) NavRoute.Home.route else NavRoute.Login.route
+        navController.navigate(target) {
+            popUpTo(NavRoute.Splash.route) { inclusive = true }
+            launchSingleTop = true
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Image(
@@ -57,17 +74,9 @@ fun SplashScreen(
             contentDescription = null,
             modifier = Modifier
                 .size(180.dp)
-                .scale(scale)
-                .alpha(alpha)
+                .scale(scaleAnim.value)
+                .alpha(alphaAnim.value)
         )
     }
-
-    LaunchedEffect(isLoggedIn) {
-        delay(3000)
-        val target = if (isLoggedIn) NavRoute.Home.route else NavRoute.Login.route
-        navController.navigate(target) {
-            popUpTo(NavRoute.Splash.route) { inclusive = true }
-            launchSingleTop = true
-        }
-    }
 }
+

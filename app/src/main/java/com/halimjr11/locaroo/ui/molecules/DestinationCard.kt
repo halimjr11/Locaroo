@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -51,8 +56,8 @@ fun DestinationCard(
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = name,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    error = painterResource(id = R.drawable.ic_launcher_background),
+                    placeholder = painterResource(id = R.drawable.ic_placeholder),
+                    error = painterResource(id = R.drawable.ic_placeholder),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -64,14 +69,23 @@ fun DestinationCard(
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(Modifier.height(4.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        tint = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.size(16.dp),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "★ $rating",
+                        text = "$rating",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 0.dp)
                     )
@@ -83,6 +97,8 @@ fun DestinationCard(
                     Text(
                         text = location,
                         style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 

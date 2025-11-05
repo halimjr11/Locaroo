@@ -4,6 +4,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import com.google.gson.Gson
+import com.halimjr11.locaroo.ui.model.PlaceUi
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun AppNavGraph(
@@ -15,23 +19,38 @@ fun AppNavGraph(
         startDestination = NavRoute.Splash.route,
         modifier = modifier
     ) {
+        val actionPlace: (PlaceUi) -> Unit = {
+            navController.navigate("detail/${it.id}")
+        }
         splashNavGraph(navController)
         authNavGraph(navController)
         homeNavGraph(
-            action = {
-                navController.navigate("detail/${it.id}")
-            },
+            action = actionPlace,
             onAddPlace = {
                 navController.navigate(NavRoute.Create.route)
+            },
+            onAboutClick = {
+                navController.navigate(NavRoute.About.route)
+            },
+            onViewAllClick = {
+                val places = Gson().toJson(it)
+                val encoded = URLEncoder.encode(places, StandardCharsets.UTF_8.toString())
+                navController.navigate("view_all/$encoded")
+            },
+            onFavoriteClick = {
+                navController.navigate(NavRoute.Favorite.route)
+            },
+            onBack = {
+                navController.popBackStack()
             }
         )
         searchNavGraph(
             onBack = { navController.popBackStack() },
-            onPlaceClick = { navController.navigate("detail/${it.id}") }
+            onPlaceClick = actionPlace
         )
         journeyNavGraph()
         favoriteNavGraph(
-            onPlaceClick = { navController.navigate("detail/${it.id}") }
+            onPlaceClick = actionPlace
         )
         detailNavGraph {
             navController.popBackStack()

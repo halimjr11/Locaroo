@@ -20,7 +20,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -40,20 +39,6 @@ class ServiceModule {
     @Provides
     @Named(Constant.BASE_KEY)
     fun provideBaseUrl(): String = Constant.BASE_URL
-
-    /**
-     * Provides an instance of {@link HttpLoggingInterceptor} with level set to {@link HttpLoggingInterceptor.Level#BODY}.
-     *
-     * @return An instance of {@link HttpLoggingInterceptor} with level set to {@link HttpLoggingInterceptor.Level#BODY}.
-     */
-    @Singleton
-    @Provides
-    fun provideHttpLogging(): HttpLoggingInterceptor {
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        return httpLoggingInterceptor.apply {
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-        }
-    }
 
     /**
      * Provides an instance of ChuckerInterceptor which is used to cache responses from the API.
@@ -141,11 +126,9 @@ class ServiceModule {
         @Named(Constant.AUTH) authInterceptor: Interceptor,
         @Named(Constant.SESSION) sessionInterceptor: Interceptor,
         @Named(Constant.TOKEN) tokenInterceptor: Authenticator,
-        logging: HttpLoggingInterceptor,
         chucker: ChuckerInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(interceptor = logging)
             .addInterceptor(interceptor = chucker)
             .addInterceptor(interceptor = authInterceptor)
             .addInterceptor(interceptor = sessionInterceptor)

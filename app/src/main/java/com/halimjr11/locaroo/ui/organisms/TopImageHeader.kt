@@ -71,7 +71,11 @@ fun TopImageHeader(
                     contentDescription = stringResource(R.string.favorite),
                     modifier = Modifier.align(Alignment.TopEnd),
                     variant = IconButtonVariant.Filled,
-                    tint = if (isFavorite) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                    tint = if (isFavorite) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.secondary
+                    },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     onClick = onFavorite
                 )

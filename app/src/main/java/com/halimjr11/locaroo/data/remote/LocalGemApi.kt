@@ -53,6 +53,7 @@ interface LocalGemApi {
     @GET("places")
     suspend fun getPlaces(
         @Query("search") search: String? = null,
+        @Query("city") city: String? = null,
         @Query("tags") tags: List<String>? = null,
         @Query("offset") offset: Int? = null,
         @Query("limit") limit: Int? = null

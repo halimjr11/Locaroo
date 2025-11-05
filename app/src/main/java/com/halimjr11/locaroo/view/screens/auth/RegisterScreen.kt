@@ -12,7 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -27,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,7 +63,7 @@ fun RegisterScreen(
         )
 
         when (state) {
-            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Loading -> CircularProgressIndicator(modifier = modifier.align(Alignment.Center))
             is UiState.Error -> Toast.makeText(
                 context,
                 (state as UiState.Error).message,
@@ -67,6 +73,8 @@ fun RegisterScreen(
             is UiState.Success -> {
                 onNavigateToLogin()
             }
+
+            else -> Unit
         }
     }
 }
@@ -80,6 +88,7 @@ fun RegisterScreenContent(
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isPasswordVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -107,7 +116,7 @@ fun RegisterScreenContent(
                 value = name,
                 onValueChange = { name = it },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Full Name") },
+                label = { Text("Username") },
                 singleLine = true,
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -126,7 +135,22 @@ fun RegisterScreenContent(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Password") },
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation()
+                visualTransformation = if (isPasswordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                trailingIcon = {
+                    val icon = if (isPasswordVisible) {
+                        Icons.Default.Visibility
+                    } else {
+                        Icons.Default.VisibilityOff
+                    }
+
+                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                        Icon(imageVector = icon, contentDescription = null)
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))

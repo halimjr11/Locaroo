@@ -101,6 +101,8 @@ fun JourneyScreen(
                     modifier = modifier.align(Alignment.Center)
                 )
             }
+
+            else -> Unit
         }
     }
 }

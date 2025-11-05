@@ -11,19 +11,19 @@ data class PlaceResponse(
     val location: String? = null,
     @SerializedName("description")
     val description: String? = null,
-    @SerializedName("image_url")
+    @SerializedName("imageUrl")
     val imageUrl: String? = null,
     @SerializedName("latitude")
     val latitude: Double? = null,
     @SerializedName("longitude")
     val longitude: Double? = null,
-    @SerializedName("tags_slugs")
+    @SerializedName("tagsSlugs")
     val tagsSlugs: List<String>? = null,
-    @SerializedName("user_id")
+    @SerializedName("userId")
     val userId: Long? = null,
-    @SerializedName("avg_rating")
+    @SerializedName("avgRating")
     val avgRating: Double? = null,
-    @SerializedName("reviews_count")
+    @SerializedName("reviewsCount")
     val reviewsCount: Int? = null,
     @SerializedName("created_at")
     val createdAt: String? = null,

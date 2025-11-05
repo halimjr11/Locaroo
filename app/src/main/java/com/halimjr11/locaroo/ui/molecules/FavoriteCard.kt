@@ -1,6 +1,5 @@
 package com.halimjr11.locaroo.ui.molecules
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ fun FavoriteCard(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .background(MaterialTheme.colorScheme.surface)
             .clickable { onCardClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
@@ -51,8 +49,8 @@ fun FavoriteCard(
                 AsyncImage(
                     model = imageUrl,
                     contentDescription = name,
-                    placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                    error = painterResource(id = R.drawable.ic_launcher_background),
+                    placeholder = painterResource(id = R.drawable.ic_placeholder),
+                    error = painterResource(id = R.drawable.ic_placeholder),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .width(100.dp)

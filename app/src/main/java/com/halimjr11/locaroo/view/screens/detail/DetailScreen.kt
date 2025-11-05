@@ -54,6 +54,7 @@ fun DetailScreen(
     viewModel: DetailViewModel = hiltViewModel(),
     onBack: () -> Unit
 ) {
+
     val state by viewModel.detailState.collectAsState()
     val isFavorite by viewModel.isFavorite.collectAsState()
     val showDatePicker = remember { mutableStateOf(false) }
@@ -102,6 +103,8 @@ fun DetailScreen(
                     onPlanNow = { showDatePicker.value = true }
                 )
             }
+
+            else -> Unit
         }
     }
 }
@@ -118,7 +121,7 @@ private fun DetailScreenContent(
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         TopImageHeader(
-            image = place.imageUrl ?: "",
+            image = place.imageUrl,
             onBack = onBack,
             onFavorite = onFavorite,
             isFavorite = isFavorite,

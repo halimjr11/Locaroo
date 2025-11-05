@@ -19,7 +19,7 @@ import com.halimjr11.locaroo.R
 fun SectionHeader(
     title: String,
     actionLabel: String = stringResource(R.string.view_all_text),
-    onActionClick: () -> Unit = {}
+    onActionClick: (String) -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -38,7 +38,7 @@ fun SectionHeader(
             text = actionLabel,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { onActionClick() },
+            modifier = Modifier.clickable { onActionClick(title) },
         )
     }
 }

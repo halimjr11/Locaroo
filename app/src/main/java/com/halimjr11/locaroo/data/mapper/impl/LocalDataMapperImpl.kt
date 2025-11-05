@@ -1,5 +1,6 @@
 package com.halimjr11.locaroo.data.mapper.impl
 
+import com.halimjr11.locaroo.common.orDoubleZero
 import com.halimjr11.locaroo.common.orLongZero
 import com.halimjr11.locaroo.data.local.model.FavoriteEntity
 import com.halimjr11.locaroo.data.local.model.ScheduleEntity
@@ -34,6 +35,7 @@ class LocalDataMapperImpl @Inject constructor() : LocalDataMapper {
             id = favoriteEntity.id.orLongZero(),
             name = favoriteEntity.name.orEmpty(),
             location = favoriteEntity.location.orEmpty(),
+            avgRating = favoriteEntity.rating.orDoubleZero(),
             imageUrl = favoriteEntity.imageUrl.orEmpty(),
         )
     }
@@ -42,6 +44,7 @@ class LocalDataMapperImpl @Inject constructor() : LocalDataMapper {
         return FavoriteEntity(
             id = placeDomain.id,
             name = placeDomain.name,
+            rating = placeDomain.avgRating,
             location = placeDomain.location,
             imageUrl = placeDomain.imageUrl,
         )
