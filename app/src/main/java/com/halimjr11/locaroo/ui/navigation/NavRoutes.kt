@@ -1,6 +1,7 @@
 package com.halimjr11.locaroo.ui.navigation
 
 sealed class NavRoute(val route: String) {
+    data object Splash : NavRoute("splash")
     data object Home : NavRoute("home")
     data object Login : NavRoute("login")
     data object Register : NavRoute("register")

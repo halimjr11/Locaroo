@@ -12,9 +12,11 @@ fun AppNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.Home.route,
+        startDestination = NavRoute.Splash.route,
         modifier = modifier
     ) {
+        splashNavGraph(navController)
+        authNavGraph(navController)
         homeNavGraph(
             action = {
                 navController.navigate("detail/${it.id}")
@@ -34,7 +36,6 @@ fun AppNavGraph(
         detailNavGraph {
             navController.popBackStack()
         }
-        authNavGraph(navController)
         createNavGraph(navController)
     }
 }
