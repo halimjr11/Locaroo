@@ -57,5 +57,5 @@ interface AuthLocalRepository {
      * This is determined by checking if the access token is not null.
      * @return A Flow that emits a boolean indicating whether the user is logged in or not.
      */
-    fun isLoggedIn(): Flow<Boolean>
+    fun isLoggedIn(): Flow<Boolean?>
 }

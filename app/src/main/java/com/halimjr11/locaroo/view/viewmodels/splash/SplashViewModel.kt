@@ -10,5 +10,5 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val authLocalRepository: AuthLocalRepository
 ) : ViewModel() {
-    val isLoggedIn: Flow<Boolean> = authLocalRepository.isLoggedIn()
+
 }

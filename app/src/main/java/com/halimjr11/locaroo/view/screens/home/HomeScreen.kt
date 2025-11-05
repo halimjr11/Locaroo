@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.gson.Gson
 import com.halimjr11.locaroo.R
 import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.ErrorState
@@ -46,6 +47,8 @@ import com.halimjr11.locaroo.utils.location.ensureLocationPermission
 import com.halimjr11.locaroo.utils.location.fetchLastKnownLocation
 import com.halimjr11.locaroo.utils.location.hasLocationPermission
 import com.halimjr11.locaroo.view.viewmodels.home.HomeViewModel
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @Composable
 fun HomeScreen(
@@ -54,7 +57,7 @@ fun HomeScreen(
     onAboutClick: () -> Unit,
     onFavoriteClick: () -> Unit,
     onAddPlace: () -> Unit,
-    onViewAllClick: (List<PlaceUi>) -> Unit,
+    onViewAllClick: (String) -> Unit,
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val state by viewModel.places.collectAsStateWithLifecycle()
@@ -101,11 +104,14 @@ fun HomeScreen(
                     onAboutClick = onAboutClick,
                     onViewAllClick = { title ->
                         println("Jalanan ==> $title")
-                        if (title == BEST_DESTINATION) {
-                            onViewAllClick(places)
+                        val list = if (title == BEST_DESTINATION) {
+                            places
                         } else {
-                            onViewAllClick(city)
+                            city
                         }
+                        val places = Gson().toJson(list)
+                        val encoded = URLEncoder.encode(places, StandardCharsets.UTF_8.toString())
+                        onViewAllClick(encoded)
                     },
                     onFavoriteClick = onFavoriteClick
                 )

@@ -1,5 +1,6 @@
 package com.halimjr11.locaroo.view.screens
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -12,15 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.halimjr11.locaroo.ui.model.PlaceUi
 import com.halimjr11.locaroo.ui.molecules.BottomNavBar
 import com.halimjr11.locaroo.ui.molecules.BottomNavItem
-import com.halimjr11.locaroo.ui.navigation.AppNavGraph
+import com.halimjr11.locaroo.ui.navigation.BottomNavGraph
 import com.halimjr11.locaroo.ui.navigation.NavRoute
 
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
+fun MainScreen(
+    onCardClick: (PlaceUi) -> Unit,
+    onAddPlace: () -> Unit,
+    onAboutClick: () -> Unit,
+    onViewAllClick: (String) -> Unit,
+    onFavoriteClick: () -> Unit,
+) {
 
+    val navController = rememberNavController()
     val bottomItems = listOf(
         BottomNavItem(icon = rememberVectorPainter(Icons.Filled.Home), label = "Home"),
         BottomNavItem(icon = rememberVectorPainter(Icons.Filled.Search), label = "Search"),
@@ -36,6 +44,7 @@ fun MainScreen() {
     val selectedIndex = routes.indexOf(currentRoute).let { if (it >= 0) it else 0 }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomNavBar(
                 items = bottomItems,
@@ -53,10 +62,14 @@ fun MainScreen() {
             )
         }
     ) { innerPadding ->
-        AppNavGraph(
+        BottomNavGraph(
+            modifier = Modifier.padding(innerPadding),
             navController = navController,
-            modifier = Modifier.padding(innerPadding)
+            onCardClick = onCardClick,
+            onAddPlace = onAddPlace,
+            onAboutClick = onAboutClick,
+            onViewAllClick = onViewAllClick,
+            onFavoriteClick = onFavoriteClick,
         )
     }
 }
-

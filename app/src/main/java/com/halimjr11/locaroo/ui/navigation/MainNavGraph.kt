@@ -3,22 +3,22 @@ package com.halimjr11.locaroo.ui.navigation
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.halimjr11.locaroo.ui.model.PlaceUi
-import com.halimjr11.locaroo.view.screens.home.HomeScreen
+import com.halimjr11.locaroo.view.screens.MainScreen
 
-fun NavGraphBuilder.homeNavGraph(
-    action: (PlaceUi) -> Unit,
-    onAboutClick: () -> Unit,
+fun NavGraphBuilder.mainNavGraph(
+    onCardClick: (PlaceUi) -> Unit,
     onAddPlace: () -> Unit,
+    onAboutClick: () -> Unit,
+    onViewAllClick: (String) -> Unit,
     onFavoriteClick: () -> Unit,
-    onViewAllClick: (String) -> Unit
 ) {
-    composable(route = NavRoute.Home.route) {
-        HomeScreen(
-            onCardClick = action,
+    composable(route = NavRoute.Main.route) {
+        MainScreen(
+            onCardClick = onCardClick,
             onAddPlace = onAddPlace,
             onAboutClick = onAboutClick,
             onViewAllClick = onViewAllClick,
-            onFavoriteClick = onFavoriteClick
+            onFavoriteClick = onFavoriteClick,
         )
     }
 }

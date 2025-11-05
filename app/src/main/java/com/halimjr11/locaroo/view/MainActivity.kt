@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.halimjr11.locaroo.common.AuthEvent
@@ -29,18 +31,32 @@ class MainActivity : ComponentActivity() {
             LocarooTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val navController = rememberNavController()
+                    val isLoggedIn by viewModel.isLoggedIn.collectAsState(initial = null)
                     LaunchedEffect(Unit) {
                         viewModel.authEvents.collect { event ->
-                            println("Jalanan ==> data $event")
                             if (event is AuthEvent.Unauthorized) {
                                 navController.navigate(NavRoute.Login.route)
                             }
                         }
                     }
-                    AppNavGraph(
-                        navController = navController,
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    when (isLoggedIn) {
+                        null -> {}
+                        true -> {
+                            AppNavGraph(
+                                navController = navController,
+                                startDestination = NavRoute.Main.route,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+
+                        false -> {
+                            AppNavGraph(
+                                navController = navController,
+                                startDestination = NavRoute.Login.route,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
+                    }
                 }
             }
         }
